@@ -1,0 +1,123 @@
+# ══════════════════════════════════════════════════════════════════════════════
+#  Sleep360 — .gitignore
+#  Python + Flask + SQLite + ML project
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Python ─────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.pyo
+*.pyd
+
+# ── Virtual Environments ───────────────────────────────────────────────────────
+venv/
+env/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# ── Environment Variables ──────────────────────────────────────────────────────
+.env
+.env.local
+.env.production
+*.env
+config.py         # if storing secrets here
+secrets.json
+
+# ── Database ───────────────────────────────────────────────────────────────────
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+*.db
+*.sqlite
+
+# ── Flask ──────────────────────────────────────────────────────────────────────
+instance/
+.webassets-cache
+flask_session/
+
+# ── Machine Learning / Data Science ───────────────────────────────────────────
+*.pkl               # Pickled ML models
+*.joblib            # Joblib-saved models
+*.h5                # Keras/HDF5 models
+*.model
+models/trained/
+notebooks/.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Data Files (keep schema, ignore large datasets) ───────────────────────────
+data/raw/
+data/processed/
+*.csv
+*.xlsx
+*.json
+!data/sample_data.json   # Allow sample data if you add one
+
+# ── IDEs & Editors ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.spyproject
+*.sublime-project
+*.sublime-workspace
+
+# ── macOS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ── Windows ────────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── Linux ──────────────────────────────────────────────────────────────────────
+*~
+
+# ── Logs ───────────────────────────────────────────────────────────────────────
+*.log
+logs/
+log/
+
+# ── Testing ────────────────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+coverage.xml
+*.cover
+nosetests.xml
+test-results/
+
+# ── Documentation builds ──────────────────────────────────────────────────────
+docs/_build/
+site/
+
+# ── Deployment ────────────────────────────────────────────────────────────────
+Procfile.local
+*.pyc
+.vercel
+.railway
+
+# ── Miscellaneous ─────────────────────────────────────────────────────────────
+*.bak
+*.tmp
+*.temp
+*.orig
