@@ -334,8 +334,8 @@ git push origin feature/your-feature-name
 
 | Name | Role |
 |---|---|
-| **Khushi Rai** | Full-Stack Developer  |
-| **N. Harshani  ** |   ML Designer         |
+| **Khushi Rai| Full-Stack Developer  |
+| N. Harshani  ** |   ML Designer         |
 
 ---
 
