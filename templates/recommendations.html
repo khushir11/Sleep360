@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Smart Recommendations{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <span class="page-eyebrow">💡 Personalised Tips</span>
+      <h1 class="section-title">Smart Recommendations</h1>
+      <p class="section-subtitle">Science-backed, personalised suggestions to improve your sleep quality, reduce fatigue, and avoid attendance shortage.</p>
+    </div>
+  </div>
+
+  {% if pred %}
+  <div class="card-glow" style="margin-bottom:32px">
+    <div style="font-size:.78rem;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px">AI Recommendation for {{ student.name }}</div>
+    <p style="font-size:.95rem;line-height:1.7;color:var(--text)">{{ pred.fatigue_recommendation }}</p>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <span class="badge badge-{{ pred.attendance_risk_level }}">{{ pred.attendance_risk_level.upper() }} ATTENDANCE RISK</span>
+      <span class="badge badge-{{ pred.fatigue_risk_level }}">{{ pred.fatigue_risk_level.upper() }} FATIGUE RISK</span>
+      <span class="badge badge-accent">Sleep Score: {{ "%.0f"|format(pred.sleep_score) }}/100</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Recommendation Cards -->
+  <div class="section-header" style="margin-bottom:20px">
+    <div class="section-tag">😴 Sleep Improvement</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:36px">
+    <div class="rec-card fade-in-up">
+      <div class="rec-icon">🌙</div>
+      <div class="rec-body">
+        <h4>Sleep Before 11:30 PM</h4>
+        <p>The body's natural melatonin peak occurs between 10–11 PM. Sleeping before 11:30 PM aligns with your circadian rhythm, improving deep sleep by up to 40%.</p>
+      </div>
+    </div>
+    <div class="rec-card fade-in-up delay-1">
+      <div class="rec-icon">📱</div>
+      <div class="rec-body">
+        <h4>Reduce Screen Time 1 Hour Before Bed</h4>
+        <p>Blue light from screens suppresses melatonin by up to 55%. Enable Night Mode after 9 PM and put your phone away at least 1 hour before sleep.</p>
+      </div>
+    </div>
+    <div class="rec-card fade-in-up delay-2">
+      <div class="rec-icon">🔄</div>
+      <div class="rec-body">
+        <h4>Maintain a Consistent Schedule</h4>
+        <p>Irregular sleep timing — even on weekends — disrupts your body clock. Aim for the same bedtime and wake time every day (within ±30 minutes).</p>
+      </div>
+    </div>
+    <div class="rec-card fade-in-up delay-3">
+      <div class="rec-icon">🌡️</div>
+      <div class="rec-body">
+        <h4>Optimise Your Sleep Environment</h4>
+        <p>A cool room (18–20°C), blackout curtains, and white noise can improve deep sleep percentage by 15–25%. These are low-cost, high-impact changes.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-bottom:20px">
+    <div class="section-tag">🧠 Deep Sleep Enhancement</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:36px">
+    <div class="rec-card fade-in-up">
+      <div class="rec-icon">🏋️</div>
+      <div class="rec-body">
+        <h4>Exercise Regularly — But Not Late</h4>
+        <p>Physical activity increases slow-wave (deep) sleep significantly. Aim for 30+ minutes of moderate exercise daily, but finish workouts at least 3 hours before bedtime.</p>
+      </div>
+    </div>
+    <div class="rec-card fade-in-up delay-1">
+      <div class="rec-icon">☕</div>
+      <div class="rec-body">
+        <h4>Avoid Caffeine After 2 PM</h4>
+        <p>Caffeine has a half-life of 6 hours. A coffee at 4 PM means half the caffeine is still in your system at 10 PM — directly disrupting deep sleep onset.</p>
+      </div>
+    </div>
+    <div class="rec-card fade-in-up delay-2">
+      <div class="rec-icon">🧘</div>
+      <div class="rec-body">
+        <h4>Wind-Down Routine</h4>
+        <p>A 20-minute relaxation routine (light reading, stretching, meditation) before bed significantly reduces cortisol and improves deep sleep entry speed by 30%.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-bottom:20px">
+    <div class="section-tag">🎓 Attendance Protection</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:36px">
+    <div class="rec-card fade-in-up">
+      <div class="rec-icon">⏰</div>
+      <div class="rec-body">
+        <h4>Set a "No Alarm Needed" Bedtime</h4>
+        <p>Count 8.5 hours back from your first class. If class starts at 8:30 AM, sleep by 12:00 AM. You'll wake naturally alert — reducing late arrivals to near zero.</p>
+      </div>
+    </div>
+    <div class="rec-card fade-in-up delay-1">
+      <div class="rec-icon">📋</div>
+      <div class="rec-body">
+        <h4>Track Your Attendance Weekly</h4>
+        <p>Students who actively track attendance are 3× less likely to hit the 75% threshold. Set a weekly reminder to check your attendance percentage.</p>
+      </div>
+    </div>
+    <div class="rec-card fade-in-up delay-2">
+      <div class="rec-icon">🤝</div>
+      <div class="rec-body">
+        <h4>Accountability Partner</h4>
+        <p>Pair with a classmate for morning check-ins. Studies show accountability partners improve attendance consistency by 25% among students at risk.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smart notification panel -->
+  <div class="card" style="margin-top:8px">
+    <div style="font-family:var(--font-h);font-size:1rem;font-weight:800;margin-bottom:16px">🔔 Smart Notification Simulation</div>
+    <div id="notifPanel" style="display:flex;flex-direction:column;gap:10px"></div>
+    <button onclick="addNotif()" class="btn-ghost" style="margin-top:14px">Simulate New Alert</button>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const notifications = [
+  { icon:'⚠️', title:'Late Sleep Alert', msg:'You slept after midnight 4 nights this week. Attendance risk rising.', time:'2 min ago' },
+  { icon:'📈', title:'Improvement Detected', msg:'Sleeping earlier may improve your predicted attendance by 12%.', time:'1 hour ago' },
+  { icon:'💡', title:'Screen Time Tip', msg:'It\'s 10:30 PM. Consider putting your phone down to protect your sleep score.', time:'Yesterday' },
+  { icon:'🎉', title:'Sleep Goal Achieved!', msg:'You hit 7+ hours sleep 5 days in a row. Keep it up!', time:'2 days ago' },
+  { icon:'🚨', title:'Attendance Warning', msg:'You\'re at 73% attendance — below the 75% threshold. 3 consecutive absences could be critical.', time:'This week' },
+];
+let notifIdx = 0;
+
+function addNotif() {
+  const n = notifications[notifIdx % notifications.length];
+  notifIdx++;
+  const el = document.createElement('div');
+  el.className = 'notif-sim';
+  el.innerHTML = `
+    <div class="notif-icon">${n.icon}</div>
+    <div class="notif-body">
+      <strong>${n.title}</strong>
+      <p style="color:var(--text2)">${n.msg}</p>
+      <div class="notif-time">${n.time}</div>
+    </div>`;
+  document.getElementById('notifPanel').prepend(el);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  addNotif(); addNotif();
+});
+</script>
+{% endblock %}

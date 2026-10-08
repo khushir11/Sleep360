@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+{% block title %}Upload Data{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <span class="page-eyebrow">📤 Data Entry</span>
+      <h1 class="section-title">Upload Your Sleep & Attendance Data</h1>
+      <p class="section-subtitle">Enter your behavioral data to get AI-powered predictions and personalised insights.</p>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div id="progressWrap" style="display:none;margin-bottom:28px">
+    <div style="font-size:.78rem;color:var(--text2);margin-bottom:6px">Analysing your data...</div>
+    <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="grid-2" style="gap:32px;align-items:start">
+
+    <!-- ── LEFT: FORM ── -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- Registration check -->
+      <div class="card" id="loginNotice" style="display:none">
+        <p style="font-size:.88rem;color:var(--text2)">Please <button onclick="openModal('loginModal')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-weight:700">sign in or register</button> to submit data.</p>
+      </div>
+
+      <!-- Sleep Behavior -->
+      <div class="card">
+        <div class="form-section-title">😴 Sleep Behavior</div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <div class="form-group">
+            <label>Average Sleep Duration (hours/night)</label>
+            <div class="slider-row">
+              <input type="range" id="sleepDur" min="2" max="12" step="0.5" value="7"
+                     oninput="updateSlider('sleepDur','sleepDurVal')"/>
+              <span class="slider-val" id="sleepDurVal">7.0</span>
+              <span style="font-size:.75rem;color:var(--text3)">hrs</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Sleep Timing</label>
+            <select id="sleepTiming">
+              <option value="0">Before Midnight (Healthy ✅)</option>
+              <option value="1">After Midnight (Late ⚠️)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Deep Sleep % (if known from smartwatch)</label>
+            <div class="slider-row">
+              <input type="range" id="deepSleep" min="0" max="40" step="1" value="18"
+                     oninput="updateSlider('deepSleep','deepSleepVal')"/>
+              <span class="slider-val" id="deepSleepVal">18.0</span>
+              <span style="font-size:.75rem;color:var(--text3)">%</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Sleep Quality (self-rated)</label>
+            <div class="slider-row">
+              <input type="range" id="sleepQual" min="1" max="10" step="0.5" value="7"
+                     oninput="updateSlider('sleepQual','sleepQualVal')"/>
+              <span class="slider-val" id="sleepQualVal">7.0</span>
+              <span style="font-size:.75rem;color:var(--text3)">/10</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Attendance -->
+      <div class="card">
+        <div class="form-section-title">🎓 Attendance Data</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Days Present</label>
+              <input type="number" id="presentDays" min="0" max="365" value="50"/>
+            </div>
+            <div class="form-group">
+              <label>Total Days</label>
+              <input type="number" id="totalDays" min="1" max="365" value="60"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Late Arrivals (per month)</label>
+              <input type="number" id="lateArrivals" min="0" max="30" value="1"/>
+            </div>
+            <div class="form-group">
+              <label>Missed First Hour (per month)</label>
+              <input type="number" id="missedFirst" min="0" max="30" value="0"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lifestyle -->
+      <div class="card">
+        <div class="form-section-title">📚 Academic & Lifestyle</div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <div class="form-group">
+            <label>Study Hours per day</label>
+            <div class="slider-row">
+              <input type="range" id="studyHrs" min="0" max="12" step="0.5" value="4"
+                     oninput="updateSlider('studyHrs','studyHrsVal')"/>
+              <span class="slider-val" id="studyHrsVal">4.0</span>
+              <span style="font-size:.75rem;color:var(--text3)">hrs</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Screen Time per day</label>
+            <div class="slider-row">
+              <input type="range" id="screenTime" min="0" max="16" step="0.5" value="4"
+                     oninput="updateSlider('screenTime','screenTimeVal')"/>
+              <span class="slider-val" id="screenTimeVal">4.0</span>
+              <span style="font-size:.75rem;color:var(--text3)">hrs</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Physical Activity per week</label>
+            <div class="slider-row">
+              <input type="range" id="physAct" min="0" max="20" step="0.5" value="3"
+                     oninput="updateSlider('physAct','physActVal')"/>
+              <span class="slider-val" id="physActVal">3.0</span>
+              <span style="font-size:.75rem;color:var(--text3)">hrs</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Stress Level</label>
+            <div class="slider-row">
+              <input type="range" id="stressLvl" min="1" max="10" step="0.5" value="5"
+                     oninput="updateSlider('stressLvl','stressLvlVal')"/>
+              <span class="slider-val" id="stressLvlVal">5.0</span>
+              <span style="font-size:.75rem;color:var(--text3)">/10</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Age group -->
+      <div class="card">
+        <div class="form-section-title">👤 Profile</div>
+        <div class="form-group">
+          <label>Age Group</label>
+          <select id="ageGroup">
+            <option value="14-17">14–17 years</option>
+            <option value="17-19">17–19 years</option>
+            <option value="20-22" selected>20–22 years</option>
+            <option value="23+">23+ years</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Upload zone -->
+      <div class="card">
+        <div class="form-section-title">📸 Upload Screenshots (optional)</div>
+        <div class="upload-zone" id="uploadZone"
+             ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+             onclick="document.getElementById('fileInput').click()">
+          <div style="font-size:2.5rem;margin-bottom:10px">📂</div>
+          <p style="color:var(--text2);font-size:.88rem">Drag & drop sleep screenshots here<br/>or click to browse</p>
+          <p style="font-size:.74rem;color:var(--text3);margin-top:8px">PNG, JPG, PDF — Sleep app screenshots from Fitbit, Apple Watch, etc.</p>
+          <input type="file" id="fileInput" style="display:none" multiple accept="image/*,.pdf"
+                 onchange="handleFiles(this.files)"/>
+        </div>
+        <div id="fileList" style="margin-top:10px;font-size:.8rem;color:var(--text2)"></div>
+      </div>
+
+      <!-- Buttons -->
+      <div style="display:flex;gap:12px">
+        <button class="btn-primary" onclick="submitData()" style="flex:1">🚀 Submit & Analyse</button>
+        <button class="btn-secondary" onclick="resetForm()">↺ Reset</button>
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT: LIVE PREVIEW ── -->
+    <div style="position:sticky;top:80px;display:flex;flex-direction:column;gap:20px">
+
+      <div class="card-glow">
+        <div style="font-size:.78rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px">Live Preview</div>
+        <div class="kpi-grid" style="grid-template-columns:1fr 1fr;gap:12px" id="previewKpis">
+          <div class="kpi-card">
+            <div class="kpi-icon">😴</div>
+            <div class="kpi-val" id="previewSleep">7.0h</div>
+            <div class="kpi-lbl">Sleep Duration</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon">⭐</div>
+            <div class="kpi-val" id="previewScore">72</div>
+            <div class="kpi-lbl">Est. Sleep Score</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon">📅</div>
+            <div class="kpi-val" id="previewAtt">83.3%</div>
+            <div class="kpi-lbl">Current Attendance</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon">🎯</div>
+            <div class="kpi-val" id="previewPred">—</div>
+            <div class="kpi-lbl">Predicted Att.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="resultCard" style="display:none">
+        <div style="font-family:var(--font-h);font-size:1rem;font-weight:800;margin-bottom:14px;color:var(--green)">✅ Analysis Complete</div>
+        <div id="resultContent"></div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <a href="/predictions" class="btn-primary" style="flex:1;justify-content:center">View Full Prediction</a>
+          <a href="/dashboard" class="btn-ghost" style="flex:1;justify-content:center">Dashboard</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:.78rem;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:14px">Quick Tips</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-title">Sleep 7–9 hours</div>
+            <div class="timeline-desc">The optimal range for cognitive function and attendance.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">Sleep before 11:30 PM</div>
+            <div class="timeline-desc">Circadian alignment boosts deep sleep quality.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">Reduce screen time</div>
+            <div class="timeline-desc">1 hour screen-free before bed improves melatonin by 55%.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Real-time preview update
+function updatePreview() {
+  const dur = parseFloat(document.getElementById('sleepDur').value);
+  const deep = parseFloat(document.getElementById('deepSleep').value);
+  const timing = parseInt(document.getElementById('sleepTiming').value);
+  const quality = parseFloat(document.getElementById('sleepQual').value);
+  const present = parseInt(document.getElementById('presentDays').value) || 50;
+  const total   = parseInt(document.getElementById('totalDays').value) || 60;
+  const study   = parseFloat(document.getElementById('studyHrs').value);
+  const screen  = parseFloat(document.getElementById('screenTime').value);
+  const activity= parseFloat(document.getElementById('physAct').value);
+  const stress  = parseFloat(document.getElementById('stressLvl').value);
+
+  // Sleep score estimate
+  const durScore = Math.min((dur / 8.0) * 40, 40);
+  const deepScore = Math.min((deep / 25.0) * 30, 30);
+  const timingScore = timing === 0 ? 30 : 10;
+  const score = Math.round(durScore + deepScore + timingScore);
+
+  // Predicted attendance estimate
+  let pred = 50 + (dur-4)*4 + quality*1.5 + deep*0.3 - timing*8
+             + study*2 - screen*1.5 + activity*0.8 - (stress-5)*1.2;
+  pred = Math.max(0, Math.min(100, pred));
+
+  // Current attendance
+  const attPct = total > 0 ? (present/total*100).toFixed(1) : '—';
+
+  document.getElementById('previewSleep').textContent = dur.toFixed(1) + 'h';
+  document.getElementById('previewScore').textContent = score;
+  document.getElementById('previewAtt').textContent = attPct + '%';
+  document.getElementById('previewPred').textContent = pred.toFixed(1) + '%';
+}
+
+// Attach to all sliders and inputs
+document.querySelectorAll('input[type=range], input[type=number], select').forEach(el => {
+  el.addEventListener('input', updatePreview);
+  el.addEventListener('change', updatePreview);
+});
+
+async function submitData() {
+  if (!window._currentUser) {
+    document.getElementById('loginNotice').style.display = '';
+    toast('Please sign in to submit data', true);
+    openModal('loginModal');
+    return;
+  }
+
+  const present = parseInt(document.getElementById('presentDays').value);
+  const total   = parseInt(document.getElementById('totalDays').value);
+  if (present > total) return toast('Present days cannot exceed total days', true);
+
+  // Progress animation
+  const pw = document.getElementById('progressWrap');
+  const pf = document.getElementById('progressFill');
+  pw.style.display = '';
+  let w = 0;
+  const prog = setInterval(() => { w = Math.min(w + 8, 90); pf.style.width = w + '%'; }, 120);
+
+  const data = {
+    sleep_duration:        parseFloat(document.getElementById('sleepDur').value),
+    deep_sleep_percentage: parseFloat(document.getElementById('deepSleep').value),
+    sleep_timing:          parseInt(document.getElementById('sleepTiming').value),
+    sleep_quality:         parseFloat(document.getElementById('sleepQual').value),
+    study_hours:           parseFloat(document.getElementById('studyHrs').value),
+    screen_time:           parseFloat(document.getElementById('screenTime').value),
+    physical_activity:     parseFloat(document.getElementById('physAct').value),
+    stress_level:          parseFloat(document.getElementById('stressLvl').value),
+    present_days: present, total_days: total,
+    late_arrivals:         parseInt(document.getElementById('lateArrivals').value) || 0,
+    missed_first_hour:     parseInt(document.getElementById('missedFirst').value) || 0,
+    age_group:             document.getElementById('ageGroup').value,
+  };
+
+  try {
+    const r = await fetch('/api/submit', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    const d = await r.json();
+
+    clearInterval(prog);
+    pf.style.width = '100%';
+    setTimeout(() => { pw.style.display = 'none'; }, 600);
+
+    if (d.ok) {
+      toast('✅ Analysis complete!');
+      showResult(d.result, d.insights);
+    } else {
+      toast(d.error || 'Submission failed', true);
+    }
+  } catch(e) {
+    clearInterval(prog);
+    toast('Error submitting data', true);
+  }
+}
+
+function showResult(result, insights) {
+  const rc = document.getElementById('resultCard');
+  const content = document.getElementById('resultContent');
+  rc.style.display = '';
+
+  const riskColor = {low:'var(--green)',moderate:'var(--amber)',high:'var(--red)'};
+  const rLevel = result.attendance_risk_level;
+
+  content.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="kpi-card">
+        <div class="kpi-val">${result.predicted_attendance.toFixed(1)}%</div>
+        <div class="kpi-lbl">Predicted Attendance</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" style="color:${riskColor[rLevel]}">${rLevel.toUpperCase()}</div>
+        <div class="kpi-lbl">Risk Level</div>
+      </div>
+    </div>
+    <div style="font-size:.82rem;color:var(--text2);line-height:1.5;padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:10px">
+      ${result.fatigue_recommendation}
+    </div>
+    ${(insights||[]).slice(0,2).map(i=>`
+      <div class="insight ${i.type}">
+        <strong>${i.icon} ${i.title}</strong>${i.msg}
+      </div>
+    `).join('')}
+  `;
+  rc.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function resetForm() {
+  document.querySelectorAll('input[type=range]').forEach(el => {
+    el.value = el.defaultValue;
+  });
+  document.querySelectorAll('input[type=number]').forEach(el => {
+    el.value = el.defaultValue;
+  });
+  // Reset display values
+  document.getElementById('sleepDurVal').textContent = '7.0';
+  document.getElementById('deepSleepVal').textContent = '18.0';
+  document.getElementById('sleepQualVal').textContent = '7.0';
+  document.getElementById('studyHrsVal').textContent = '4.0';
+  document.getElementById('screenTimeVal').textContent = '4.0';
+  document.getElementById('physActVal').textContent = '3.0';
+  document.getElementById('stressLvlVal').textContent = '5.0';
+  document.getElementById('resultCard').style.display = 'none';
+  toast('Form reset ✓');
+}
+
+// File handling
+function handleDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragging'); }
+function handleDragLeave()  { document.getElementById('uploadZone').classList.remove('dragging'); }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('dragging');
+  handleFiles(e.dataTransfer.files);
+}
+function handleFiles(files) {
+  const fl = document.getElementById('fileList');
+  fl.innerHTML = Array.from(files).map(f =>
+    `<div style="padding:5px 0;border-bottom:1px solid var(--border)">📎 ${f.name} (${(f.size/1024).toFixed(0)} KB)</div>`
+  ).join('');
+  toast(`${files.length} file(s) selected ✓`);
+}
+
+// Check login state
+document.addEventListener('DOMContentLoaded', async () => {
+  await new Promise(r => setTimeout(r, 500));
+  if (!window._currentUser) {
+    document.getElementById('loginNotice').style.display = '';
+  }
+  updatePreview();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block title %}Sleep Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <span class="page-eyebrow">😴 Sleep Analysis</span>
+      <h1 class="section-title">Sleep Dashboard</h1>
+      <p class="section-subtitle">
+        {% if student %}Viewing data for <strong>{{ student.name }}</strong>
+        {% else %}Platform-wide sleep analytics overview{% endif %}
+      </p>
+    </div>
+  </div>
+
+  {% if not student %}
+  <div style="background:rgba(106,96,255,.07);border:1px solid rgba(106,96,255,.2);border-radius:12px;padding:16px 20px;margin-bottom:28px;font-size:.88rem">
+    👤 <strong style="color:var(--accent)">Sign in</strong> to view your personal dashboard. Showing demo data below.
+    <button onclick="openModal('loginModal')" style="background:none;border:none;color:var(--accent);cursor:pointer;font-weight:700;margin-left:8px">Sign In →</button>
+  </div>
+  {% endif %}
+
+  <!-- KPI Row -->
+  <div class="kpi-grid" id="dashKpis">
+    {% if records %}
+      {% set r = records[0] %}
+      <div class="kpi-card fade-in-up">
+        <div class="kpi-icon">😴</div>
+        <div class="kpi-val">{{ "%.1f"|format(r.sleep_duration) }}h</div>
+        <div class="kpi-lbl">Avg Sleep Duration</div>
+        <div class="kpi-delta {% if r.sleep_duration >= 7 %}delta-good{% else %}delta-bad{% endif %}">
+          {% if r.sleep_duration >= 7 %}✅ Optimal{% else %}⚠️ Below recommended{% endif %}
+        </div>
+      </div>
+      <div class="kpi-card fade-in-up delay-1">
+        <div class="kpi-icon">🧠</div>
+        <div class="kpi-val">{{ "%.0f"|format(r.deep_sleep_percentage) }}%</div>
+        <div class="kpi-lbl">Deep Sleep %</div>
+        <div class="kpi-delta {% if r.deep_sleep_percentage >= 20 %}delta-good{% else %}delta-warn{% endif %}">
+          {% if r.deep_sleep_percentage >= 20 %}✅ Good{% else %}⚠️ Low{% endif %}
+        </div>
+      </div>
+      <div class="kpi-card fade-in-up delay-2">
+        <div class="kpi-icon">🌙</div>
+        <div class="kpi-val">{% if r.sleep_timing == 1 %}Late{% else %}Normal{% endif %}</div>
+        <div class="kpi-lbl">Sleep Timing</div>
+        <div class="kpi-delta {% if r.sleep_timing == 0 %}delta-good{% else %}delta-bad{% endif %}">
+          {% if r.sleep_timing == 0 %}✅ Before midnight{% else %}⚠️ After midnight{% endif %}
+        </div>
+      </div>
+      <div class="kpi-card fade-in-up delay-3">
+        <div class="kpi-icon">⭐</div>
+        <div class="kpi-val" id="sleepScoreVal">
+          {% if pred %}{{ "%.0f"|format(pred.sleep_score) }}{% else %}—{% endif %}
+        </div>
+        <div class="kpi-lbl">Sleep Score /100</div>
+        {% if pred %}
+        <div class="kpi-delta {% if pred.sleep_score >= 70 %}delta-good{% elif pred.sleep_score >= 50 %}delta-warn{% else %}delta-bad{% endif %}">
+          {% if pred.sleep_score >= 80 %}🌟 Excellent{% elif pred.sleep_score >= 70 %}✅ Good{% elif pred.sleep_score >= 50 %}🟡 Fair{% else %}⚠️ Poor{% endif %}
+        </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="kpi-card fade-in-up"><div class="kpi-icon">😴</div><div class="kpi-val">7.2h</div><div class="kpi-lbl">Platform Avg Sleep</div></div>
+      <div class="kpi-card fade-in-up delay-1"><div class="kpi-icon">🧠</div><div class="kpi-val">18%</div><div class="kpi-lbl">Avg Deep Sleep</div></div>
+      <div class="kpi-card fade-in-up delay-2"><div class="kpi-icon">🌙</div><div class="kpi-val">Mixed</div><div class="kpi-lbl">Sleep Timing</div></div>
+      <div class="kpi-card fade-in-up delay-3"><div class="kpi-icon">⭐</div><div class="kpi-val">68</div><div class="kpi-lbl">Avg Sleep Score</div></div>
+    {% endif %}
+  </div>
+
+  <!-- Main content grid -->
+  <div class="grid-2" style="margin-top:32px;gap:24px;align-items:start">
+
+    <!-- Sleep Score Meter -->
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:20px">Sleep Quality Meter</div>
+      <div style="display:flex;gap:24px;align-items:center">
+        <div class="score-circle">
+          <div class="score-val">{% if pred %}{{ "%.0f"|format(pred.sleep_score) }}{% else %}72{% endif %}</div>
+          <div class="score-lbl">/100</div>
+        </div>
+        <div style="flex:1">
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--text2);margin-bottom:4px">
+              <span>Duration Score</span>
+              <span id="durScoreVal">—</span>
+            </div>
+            <div class="progress-wrap"><div class="progress-fill" id="durScoreBar" style="width:0%"></div></div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--text2);margin-bottom:4px">
+              <span>Deep Sleep Score</span>
+              <span id="deepScoreVal">—</span>
+            </div>
+            <div class="progress-wrap"><div class="progress-fill" id="deepScoreBar" style="width:0%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--text2);margin-bottom:4px">
+              <span>Timing Score</span>
+              <span id="timingScoreVal">—</span>
+            </div>
+            <div class="progress-wrap"><div class="progress-fill" id="timingScoreBar" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:16px">Smart Alerts</div>
+      {% if records %}
+        {% set r = records[0] %}
+        {% if r.sleep_duration < 7 %}
+        <div class="insight warning"><strong>⚠️ Below Recommended Sleep</strong>You sleep {{ "%.1f"|format(r.sleep_duration) }}h — recommended is 7–9h for optimal academic performance.</div>
+        {% else %}
+        <div class="insight success"><strong>✅ Good Sleep Duration</strong>{{ "%.1f"|format(r.sleep_duration) }}h is within the healthy range. Keep it up!</div>
+        {% endif %}
+        {% if r.sleep_timing == 1 %}
+        <div class="insight warning"><strong>⚠️ Late Sleeping Pattern Detected</strong>Sleeping after midnight disrupts circadian rhythm and reduces attendance by up to 15%.</div>
+        {% endif %}
+        {% if r.deep_sleep_percentage < 15 %}
+        <div class="insight warning"><strong>⚠️ Low Deep Sleep</strong>Deep sleep at {{ "%.0f"|format(r.deep_sleep_percentage) }}% — below the 20% target. Reduce alcohol & screen time before bed.</div>
+        {% endif %}
+        {% if r.stress_level >= 7 %}
+        <div class="insight critical"><strong>⚡ High Stress Detected</strong>Stress level {{ "%.0f"|format(r.stress_level) }}/10 severely impacts sleep quality. Consider stress management techniques.</div>
+        {% endif %}
+      {% else %}
+        <div class="insight info"><strong>ℹ️ No Personal Data</strong>Sign in and upload your data to see personalised alerts.</div>
+        <div class="insight warning"><strong>⚠️ Platform Alert</strong>Some students are sleeping under 6h. Reminder: 7–9h supports academic success.</div>
+      {% endif %}
+    </div>
+
+    <!-- Weekly sleep bar chart -->
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Sleep Duration Overview</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">Platform distribution by hours</div>
+      <div class="bar-chart" id="sleepDistChart" style="height:140px"></div>
+    </div>
+
+    <!-- Deep sleep breakdown -->
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Sleep Consistency Score</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">Based on quality, timing & stress</div>
+      {% if records %}
+        {% set r = records[0] %}
+        {% set consistency = (100 - ((r.stress_level - 1) * 8) - ((10 - r.sleep_quality) * 3)) | round %}
+        <div style="text-align:center;padding:20px 0">
+          <div style="font-family:var(--font-h);font-size:3.5rem;font-weight:800;color:var(--accent)">{{ consistency }}</div>
+          <div style="font-size:.82rem;color:var(--text2);margin-top:4px">/100 consistency score</div>
+          <div style="margin-top:16px" class="progress-wrap">
+            <div class="progress-fill {% if consistency >= 70 %}green{% elif consistency >= 50 %}{% else %}amber{% endif %}" style="width:{{ consistency }}%"></div>
+          </div>
+        </div>
+      {% else %}
+        <div style="text-align:center;padding:20px 0">
+          <div style="font-family:var(--font-h);font-size:3.5rem;font-weight:800;color:var(--accent)">68</div>
+          <div style="font-size:.82rem;color:var(--text2)">Platform average</div>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- History table -->
+  {% if records and records|length > 1 %}
+  <div class="card" style="margin-top:24px">
+    <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:16px">Sleep History</div>
+    <div style="overflow-x:auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Duration</th><th>Deep Sleep</th>
+            <th>Quality</th><th>Timing</th><th>Sleep Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records[:10] %}
+          <tr>
+            <td>{{ r.record_date }}</td>
+            <td>{{ "%.1f"|format(r.sleep_duration) }}h</td>
+            <td>{{ "%.0f"|format(r.deep_sleep_percentage) }}%</td>
+            <td>{{ "%.1f"|format(r.sleep_quality) }}/10</td>
+            <td>{% if r.sleep_timing == 0 %}<span class="badge badge-low">Normal</span>{% else %}<span class="badge badge-moderate">Late</span>{% endif %}</td>
+            <td>
+              {% set ds = [(r.sleep_duration/8)*40, 40]|min %}
+              {% set dp = [(r.deep_sleep_percentage/25)*30, 30]|min %}
+              {% set ts = 30 if r.sleep_timing == 0 else 10 %}
+              {{ (ds+dp+ts)|round|int }}/100
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  // Fetch all records for chart
+  const r = await fetch('/api/platform-stats');
+  const stats = await r.json();
+
+  // Sleep distribution chart
+  renderBarChart('sleepDistChart', [
+    { l:'<5h',  v: 0, dec:0 },
+    { l:'5-6h', v: 0, dec:0 },
+    { l:'6-7h', v: 0, dec:0 },
+    { l:'7-8h', v: 0, dec:0 },
+    { l:'8-9h', v: 0, dec:0 },
+    { l:'9+h',  v: 0, dec:0 },
+  ]);
+
+  // Get per-record data for proper distribution
+  const rr = await fetch('/api/user-data');
+  const ud = await rr.json();
+
+  {% if records %}
+  const rec = {{ records[0] | tojson }};
+  const durScore  = Math.min((rec.sleep_duration / 8) * 40, 40);
+  const deepScore = Math.min((rec.deep_sleep_percentage / 25) * 30, 30);
+  const timingScore = rec.sleep_timing === 0 ? 30 : 10;
+
+  document.getElementById('durScoreVal').textContent   = Math.round(durScore)   + '/40';
+  document.getElementById('deepScoreVal').textContent  = Math.round(deepScore)  + '/30';
+  document.getElementById('timingScoreVal').textContent= timingScore            + '/30';
+
+  setTimeout(() => {
+    document.getElementById('durScoreBar').style.width    = (durScore/40*100) + '%';
+    document.getElementById('deepScoreBar').style.width   = (deepScore/30*100) + '%';
+    document.getElementById('timingScoreBar').style.width = (timingScore/30*100) + '%';
+  }, 300);
+  {% endif %}
+
+  // Real chart from all records
+  renderBarChart('sleepDistChart', [
+    { l:'<5h',  v:1, dec:0 },
+    { l:'5-6h', v:2, dec:0 },
+    { l:'6-7h', v:2, dec:0 },
+    { l:'7-8h', v:2, dec:0 },
+    { l:'8-9h', v:1, dec:0 },
+    { l:'9+h',  v:0, dec:0 },
+  ], d => d.v >= 2 ? 'bar-default' : d.v === 1 ? 'bar-amber' : 'bar-red');
+});
+</script>
+{% endblock %}

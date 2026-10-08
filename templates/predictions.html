@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}AI Predictions{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <span class="page-eyebrow">🤖 AI Analysis</span>
+      <h1 class="section-title">AI Predictions</h1>
+      <p class="section-subtitle">Advanced behavioral analysis predicting your next-semester attendance, fatigue risk, and optimal sleep targets.</p>
+    </div>
+  </div>
+
+  {% if not student %}
+  <div style="background:rgba(106,96,255,.07);border:1px solid rgba(106,96,255,.2);border-radius:12px;padding:20px;margin-bottom:32px">
+    <h3 style="font-family:var(--font-h);margin-bottom:8px">Sign in to unlock personalised predictions</h3>
+    <p style="color:var(--text2);font-size:.88rem;margin-bottom:12px">Showing demo predictions. Register and submit your data to get your own AI forecast.</p>
+    <button onclick="openModal('loginModal')" class="btn-primary">Sign In / Register</button>
+  </div>
+  {% endif %}
+
+  <!-- Big prediction card -->
+  {% if pred or not student %}
+  <div class="card-glow" style="margin-bottom:32px">
+    <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:20px">
+      <div>
+        <div style="font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:700;margin-bottom:8px">AI Forecast — Next Semester</div>
+        {% if pred %}
+          {% set risk = pred.attendance_risk_level %}
+          <div style="font-family:var(--font-h);font-size:3.5rem;font-weight:800;line-height:1;
+            color:{{'#10d9a0' if risk=='low' else '#fbbf24' if risk=='moderate' else '#f43f5e'}}">
+            {{ "%.1f"|format(pred.predicted_attendance) }}%
+          </div>
+          <div style="color:var(--text2);font-size:.9rem;margin-top:8px">Predicted Attendance</div>
+          <div class="badge badge-{{ risk }}" style="margin-top:10px">{{ risk.upper() }} RISK</div>
+          <p style="color:var(--text2);font-size:.87rem;margin-top:16px;max-width:400px;line-height:1.6">
+            {% if pred.predicted_attendance < 75 %}
+            ⚠️ If current habits continue: Predicted attendance → <strong style="color:var(--red)">{{ "%.1f"|format(pred.predicted_attendance) }}%</strong>
+            — below the required 75% threshold. Immediate action recommended.
+            {% elif pred.predicted_attendance < 85 %}
+            🟡 Moderate risk detected. Small improvements in sleep schedule could push attendance above 85%.
+            {% else %}
+            ✅ Excellent trajectory! Current habits support strong attendance. Maintain consistency.
+            {% endif %}
+          </p>
+        {% else %}
+          <div style="font-family:var(--font-h);font-size:3.5rem;font-weight:800;line-height:1;color:var(--amber)">63%</div>
+          <div style="color:var(--text2);font-size:.9rem;margin-top:8px">Demo Prediction</div>
+          <div class="badge badge-high" style="margin-top:10px">HIGH RISK</div>
+          <p style="color:var(--text2);font-size:.87rem;margin-top:16px;max-width:400px;line-height:1.6">
+            ⚠️ If current habits continue: Predicted attendance → <strong style="color:var(--red)">63%</strong> — Risk level → <strong style="color:var(--red)">HIGH</strong>.
+          </p>
+        {% endif %}
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:220px">
+        {% if pred %}
+        <div style="padding:16px;background:rgba(0,0,0,.2);border-radius:12px;border:1px solid var(--border)">
+          <div style="font-size:.72rem;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Recommended Sleep</div>
+          <div style="font-family:var(--font-h);font-size:2rem;font-weight:800;color:var(--green)">7.5h</div>
+          <div style="font-size:.75rem;color:var(--text2)">Optimal for your profile</div>
+        </div>
+        <div style="padding:16px;background:rgba(0,0,0,.2);border-radius:12px;border:1px solid var(--border)">
+          <div style="font-size:.72rem;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Sleep Score</div>
+          <div style="font-family:var(--font-h);font-size:2rem;font-weight:800;color:var(--accent)">{{ "%.0f"|format(pred.sleep_score) }}/100</div>
+          <div style="font-size:.75rem;color:var(--text2)">
+            {% if pred.sleep_score >= 80 %}🌟 Excellent{% elif pred.sleep_score >= 70 %}✅ Good{% elif pred.sleep_score >= 50 %}🟡 Fair{% else %}⚠️ Poor{% endif %}
+          </div>
+        </div>
+        <div style="padding:16px;background:rgba(0,0,0,.2);border-radius:12px;border:1px solid var(--border)">
+          <div style="font-size:.72rem;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Fatigue Risk</div>
+          <div class="risk-label {{ pred.fatigue_risk_level }}" style="font-size:1.2rem">{{ pred.fatigue_risk_level.upper() }}</div>
+        </div>
+        {% else %}
+        <div style="padding:16px;background:rgba(0,0,0,.2);border-radius:12px;border:1px solid var(--border)">
+          <div style="font-size:.72rem;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Recommended Sleep</div>
+          <div style="font-family:var(--font-h);font-size:2rem;font-weight:800;color:var(--green)">7.5h</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Prediction charts -->
+  <div class="grid-2" style="gap:24px;margin-bottom:24px">
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Trend Projection</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">Attendance forecast with habit changes</div>
+      <div class="bar-chart" id="projChart" style="height:160px"></div>
+      <div style="font-size:.74rem;color:var(--text2);margin-top:10px">Current → Moderate Fix → Full Optimisation</div>
+    </div>
+
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Factor Impact on Attendance</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">Each factor's contribution (±%)</div>
+      <div id="factorChart" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+  </div>
+
+  <!-- Recommendation from AI -->
+  {% if pred %}
+  <div class="card" style="border-color:rgba(106,96,255,.3);margin-bottom:24px">
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <div style="font-size:2rem">🤖</div>
+      <div>
+        <div style="font-family:var(--font-h);font-size:1rem;font-weight:800;margin-bottom:6px">AI Recommendation</div>
+        <p style="color:var(--text2);font-size:.9rem;line-height:1.7">{{ pred.fatigue_recommendation }}</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- 5 habits impact simulator -->
+  <div class="card" style="margin-bottom:24px">
+    <div style="font-family:var(--font-h);font-size:1rem;font-weight:800;margin-bottom:4px">Habit Impact Simulator</div>
+    <div style="font-size:.82rem;color:var(--text2);margin-bottom:20px">What happens if you improve one habit?</div>
+    <div class="grid-3" style="gap:14px">
+      <div style="padding:16px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <div style="font-size:1.2rem;margin-bottom:8px">😴</div>
+        <div style="font-family:var(--font-h);font-size:.9rem;font-weight:700;margin-bottom:4px">Sleep 7+ hours</div>
+        <div class="badge badge-low" style="margin-bottom:8px">+8% Attendance</div>
+        <div style="font-size:.77rem;color:var(--text2)">Adding 1–2 hours to your sleep can raise predicted attendance significantly.</div>
+      </div>
+      <div style="padding:16px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <div style="font-size:1.2rem;margin-bottom:8px">🌙</div>
+        <div style="font-family:var(--font-h);font-size:.9rem;font-weight:700;margin-bottom:4px">Sleep before midnight</div>
+        <div class="badge badge-low" style="margin-bottom:8px">+8% Attendance</div>
+        <div style="font-size:.77rem;color:var(--text2)">Shifting bedtime before midnight improves circadian rhythm and early attendance.</div>
+      </div>
+      <div style="padding:16px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <div style="font-size:1.2rem;margin-bottom:8px">📱</div>
+        <div style="font-family:var(--font-h);font-size:.9rem;font-weight:700;margin-bottom:4px">Reduce screen time</div>
+        <div class="badge badge-moderate" style="margin-bottom:8px">+4.5% Attendance</div>
+        <div style="font-size:.77rem;color:var(--text2)">Each hour less of screen time improves predicted attendance by ~1.5%.</div>
+      </div>
+      <div style="padding:16px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <div style="font-size:1.2rem;margin-bottom:8px">🏃</div>
+        <div style="font-family:var(--font-h);font-size:.9rem;font-weight:700;margin-bottom:4px">Exercise 3+ hrs/week</div>
+        <div class="badge badge-low" style="margin-bottom:8px">+2.4% Attendance</div>
+        <div style="font-size:.77rem;color:var(--text2)">Physical activity improves sleep quality and energy levels for attendance.</div>
+      </div>
+      <div style="padding:16px;background:var(--bg3);border-radius:12px;border:1px solid var(--border)">
+        <div style="font-size:1.2rem;margin-bottom:8px">🧘</div>
+        <div style="font-family:var(--font-h);font-size:.9rem;font-weight:700;margin-bottom:4px">Reduce stress to ≤5</div>
+        <div class="badge badge-moderate" style="margin-bottom:8px">+3.6% Attendance</div>
+        <div style="font-size:.77rem;color:var(--text2)">High stress disrupts sleep. Reducing stress level by 3 points adds ~3.6% attendance.</div>
+      </div>
+      <div style="padding:16px;background:var(--bg3);border-radius:12px;border:1px solid rgba(16,217,160,.3);background:rgba(16,217,160,.05)">
+        <div style="font-size:1.2rem;margin-bottom:8px">🎯</div>
+        <div style="font-family:var(--font-h);font-size:.9rem;font-weight:700;margin-bottom:4px">All habits optimised</div>
+        <div class="badge badge-low" style="margin-bottom:8px">+15–20% Total</div>
+        <div style="font-size:.77rem;color:var(--text2)">Combining all improvements can transform HIGH risk → LOW risk attendance.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  {% if pred %}
+  const base = {{ pred.predicted_attendance }};
+  {% else %}
+  const base = 63;
+  {% endif %}
+
+  const moderate = Math.min(100, base + 10);
+  const full = Math.min(100, base + 20);
+
+  renderBarChart('projChart', [
+    { l:'Current',    v: Math.round(base), dec:0 },
+    { l:'Mod. Fix',   v: Math.round(moderate), dec:0 },
+    { l:'Full Opt.',  v: Math.round(full), dec:0 },
+    { l:'Target',     v: 85, dec:0 },
+  ], d => d.v >= 85 ? 'bar-green' : d.v >= 75 ? 'bar-amber' : 'bar-red');
+
+  // Factor impact chart
+  const factors = [
+    { name: '😴 Sleep Duration',     impact: '+4.0%/hr',  positive: true },
+    { name: '🧠 Deep Sleep %',       impact: '+0.3%/1%',  positive: true },
+    { name: '🌙 Late Sleep',         impact: '−8.0%',     positive: false },
+    { name: '📚 Study Hours',        impact: '+2.0%/hr',  positive: true },
+    { name: '📱 Screen Time',        impact: '−1.5%/hr',  positive: false },
+    { name: '🏃 Physical Activity',  impact: '+0.8%/hr',  positive: true },
+    { name: '⚡ Stress Level',       impact: '−1.2%/pt',  positive: false },
+  ];
+  document.getElementById('factorChart').innerHTML = factors.map(f => `
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem;padding:6px 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--text2)">${f.name}</span>
+      <span style="font-family:var(--font-h);font-weight:700;color:${f.positive ? 'var(--green)' : 'var(--red)'}">${f.impact}</span>
+    </div>
+  `).join('');
+});
+</script>
+{% endblock %}

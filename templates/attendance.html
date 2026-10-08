@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}Attendance Analyzer{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <span class="page-eyebrow">🎓 Attendance Analysis</span>
+      <h1 class="section-title">Attendance Analyzer</h1>
+      <p class="section-subtitle">Understand your attendance patterns and identify risk factors before they become critical.</p>
+    </div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-grid" style="margin-bottom:28px">
+    {% if records %}
+      {% set r = records[0] %}
+      {% set att_pct = (r.present_days / r.total_days * 100) if r.total_days > 0 else 0 %}
+      <div class="kpi-card fade-in-up">
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-val">{{ "%.1f"|format(att_pct) }}%</div>
+        <div class="kpi-lbl">Current Attendance</div>
+        <div class="kpi-delta {% if att_pct >= 75 %}delta-good{% else %}delta-bad{% endif %}">
+          {% if att_pct >= 85 %}🟢 Safe{% elif att_pct >= 75 %}🟡 Borderline{% else %}🔴 Shortage Risk{% endif %}
+        </div>
+      </div>
+      <div class="kpi-card fade-in-up delay-1">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-val">{{ r.present_days }}</div>
+        <div class="kpi-lbl">Days Present</div>
+        <div class="kpi-delta delta-good">of {{ r.total_days }} total days</div>
+      </div>
+      <div class="kpi-card fade-in-up delay-2">
+        <div class="kpi-icon">⏰</div>
+        <div class="kpi-val">{{ r.late_arrivals }}</div>
+        <div class="kpi-lbl">Late Arrivals</div>
+        <div class="kpi-delta {% if r.late_arrivals <= 2 %}delta-good{% else %}delta-warn{% endif %}">
+          {% if r.late_arrivals <= 2 %}Low impact{% else %}Moderate impact{% endif %}
+        </div>
+      </div>
+      <div class="kpi-card fade-in-up delay-3">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-val">{{ r.missed_first_hour }}</div>
+        <div class="kpi-lbl">Missed First Hour</div>
+        <div class="kpi-delta {% if r.missed_first_hour == 0 %}delta-good{% else %}delta-bad{% endif %}">
+          {% if r.missed_first_hour == 0 %}None 🎉{% else %}Impact detected{% endif %}
+        </div>
+      </div>
+    {% else %}
+      <div class="kpi-card fade-in-up"><div class="kpi-icon">📅</div><div class="kpi-val">78.5%</div><div class="kpi-lbl">Platform Avg Attendance</div></div>
+      <div class="kpi-card fade-in-up delay-1"><div class="kpi-icon">✅</div><div class="kpi-val">55/70</div><div class="kpi-lbl">Avg Days Present</div></div>
+      <div class="kpi-card fade-in-up delay-2"><div class="kpi-icon">⏰</div><div class="kpi-val">1.8</div><div class="kpi-lbl">Avg Late Arrivals</div></div>
+      <div class="kpi-card fade-in-up delay-3"><div class="kpi-icon">⚠️</div><div class="kpi-val">1.2</div><div class="kpi-lbl">Avg Missed First Hr</div></div>
+    {% endif %}
+  </div>
+
+  <div class="grid-2" style="gap:24px;align-items:start">
+
+    <!-- Risk Meter -->
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:20px">Attendance Risk Meter</div>
+
+      {% if pred %}
+        {% set risk = pred.attendance_risk_level %}
+        <div style="text-align:center">
+          <div class="risk-meter" style="border:none;background:transparent;padding:0">
+            <div style="font-size:4rem;margin-bottom:8px">
+              {% if risk == 'low' %}🟢{% elif risk == 'moderate' %}🟡{% else %}🔴{% endif %}
+            </div>
+            <div class="risk-label {{ risk }}" style="font-size:1.5rem">{{ risk.upper() }} RISK</div>
+            <div style="font-size:.82rem;color:var(--text2);margin-top:4px">
+              {{ "%.0f"|format(pred.attendance_risk_score) }}% chance of attendance shortage
+            </div>
+          </div>
+
+          <div style="margin-top:20px">
+            <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--text2);margin-bottom:6px">
+              <span>Risk Probability</span>
+              <span>{{ "%.0f"|format(pred.attendance_risk_score) }}%</span>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-fill {% if risk == 'low' %}green{% elif risk == 'moderate' %}amber{% else %}red{% endif %}"
+                   style="width:{{ pred.attendance_risk_score }}%"></div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;text-align:left">
+            <div style="font-size:.78rem;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase">Impact Factors</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:.82rem;color:var(--text2)">
+              <div style="display:flex;justify-content:space-between">
+                <span>Late Arrivals Impact</span>
+                <span class="badge badge-{% if records and records[0].late_arrivals <= 2 %}low{% else %}moderate{% endif %}">
+                  {% if records and records[0].late_arrivals <= 2 %}Low{% else %}Moderate{% endif %}
+                </span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>Missed First Hour</span>
+                <span class="badge badge-{% if records and records[0].missed_first_hour == 0 %}low{% else %}high{% endif %}">
+                  {% if records and records[0].missed_first_hour == 0 %}None{% else %}High{% endif %}
+                </span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>Sleep Impact</span>
+                <span class="badge badge-{{ pred.attendance_risk_level }}">{{ pred.attendance_risk_level.title() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty-state" style="padding:40px 0">
+          <span class="empty-icon">📊</span>
+          <p>Sign in and submit data to see your risk assessment.</p>
+          <button onclick="openModal('loginModal')" class="btn-primary" style="margin-top:16px">Get Started</button>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Breakdown Chart -->
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Attendance Breakdown</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">Platform distribution across risk levels</div>
+      <div class="bar-chart" id="riskChart" style="height:140px"></div>
+      <hr class="divider"/>
+      <div style="font-family:var(--font-h);font-size:.9rem;font-weight:700;margin-bottom:12px">Missed Hours Impact</div>
+      <div class="bar-chart" id="missedChart" style="height:100px"></div>
+    </div>
+
+    <!-- Attendance progress -->
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:16px">Attendance Progress</div>
+      {% if records %}
+        {% set r = records[0] %}
+        {% set att = (r.present_days / r.total_days * 100) if r.total_days > 0 else 0 %}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <div>
+            <div style="font-family:var(--font-h);font-size:2.5rem;font-weight:800;color:var(--accent)">{{ "%.1f"|format(att) }}%</div>
+            <div style="font-size:.78rem;color:var(--text2)">Current Attendance</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--font-h);font-size:1.3rem;font-weight:700;color:var(--green)">75%</div>
+            <div style="font-size:.78rem;color:var(--text2)">Minimum Required</div>
+          </div>
+        </div>
+        <div class="progress-wrap" style="height:12px;margin-bottom:10px">
+          <div class="progress-fill {% if att >= 75 %}green{% else %}red{% endif %}" style="width:{{ att }}%"></div>
+        </div>
+        {% set safe_line = 75 %}
+        {% set needed = ((safe_line * r.total_days) - r.present_days * 100) / 100 %}
+        {% if att >= 75 %}
+          <div class="insight success"><strong>✅ Above Threshold</strong>You can afford to miss {{ [(r.present_days - (safe_line * r.total_days / 100)) | round | int, 0] | max }} more days and still maintain 75%.</div>
+        {% else %}
+          <div class="insight critical"><strong>🚨 Below Threshold</strong>You need to attend the next {{ needed | round | int }} consecutive days to reach 75%.</div>
+        {% endif %}
+      {% else %}
+        <div class="insight info"><strong>ℹ️ No Data</strong>Submit your attendance data to see your progress.</div>
+      {% endif %}
+    </div>
+
+    <!-- Late arrival impact -->
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:16px">Late Arrival Impact Analysis</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="padding:14px;background:var(--bg3);border-radius:10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:.82rem;font-weight:600">0 Late Arrivals</span>
+            <span class="badge badge-low">Safe</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill green" style="width:92%"></div></div>
+          <div style="font-size:.74rem;color:var(--text2);margin-top:4px">~92% predicted attendance</div>
+        </div>
+        <div style="padding:14px;background:var(--bg3);border-radius:10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:.82rem;font-weight:600">3–5 Late Arrivals/month</span>
+            <span class="badge badge-moderate">Warning</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill amber" style="width:78%"></div></div>
+          <div style="font-size:.74rem;color:var(--text2);margin-top:4px">~78% predicted attendance</div>
+        </div>
+        <div style="padding:14px;background:var(--bg3);border-radius:10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:.82rem;font-weight:600">6+ Late Arrivals/month</span>
+            <span class="badge badge-high">High Risk</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill red" style="width:62%"></div></div>
+          <div style="font-size:.74rem;color:var(--text2);margin-top:4px">~62% predicted attendance</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderBarChart('riskChart', [
+    { l:'Safe (>85%)',    v:3, dec:0 },
+    { l:'Warn (75-85%)', v:3, dec:0 },
+    { l:'Risk (<75%)',   v:2, dec:0 },
+  ], d => d.l.includes('Safe') ? 'bar-green' : d.l.includes('Warn') ? 'bar-amber' : 'bar-red');
+
+  renderBarChart('missedChart', [
+    { l:'0 Missed', v:92, dec:0 },
+    { l:'1-2/month',v:85, dec:0 },
+    { l:'3-5/month',v:75, dec:0 },
+    { l:'6+/month', v:60, dec:0 },
+  ], d => d.v >= 85 ? 'bar-green' : d.v >= 75 ? 'bar-amber' : 'bar-red');
+});
+</script>
+{% endblock %}

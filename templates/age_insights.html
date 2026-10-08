@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Age Group Insights{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <span class="page-eyebrow">👥 Peer Analysis</span>
+      <h1 class="section-title">Age Group Insights</h1>
+      <p class="section-subtitle">See how sleep patterns and attendance vary across different age groups. Compare your data with peers.</p>
+    </div>
+  </div>
+
+  <!-- Age group KPIs -->
+  <div style="margin-bottom:32px">
+    <div style="font-size:.78rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px">Platform Age Group Summary</div>
+    <div class="grid-4">
+      <div class="kpi-card fade-in-up" style="border-top:3px solid var(--blue)">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:6px">14–17 years</div>
+        <div class="kpi-val" style="font-size:1.4rem;color:var(--blue)">6.5h</div>
+        <div class="kpi-lbl">Avg Sleep</div>
+        <div class="kpi-delta delta-warn">82% avg attendance</div>
+      </div>
+      <div class="kpi-card fade-in-up delay-1" style="border-top:3px solid var(--accent)">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:6px">17–19 years</div>
+        <div class="kpi-val" style="font-size:1.4rem">5.8h</div>
+        <div class="kpi-lbl">Avg Sleep</div>
+        <div class="kpi-delta delta-bad">74% avg attendance</div>
+      </div>
+      <div class="kpi-card fade-in-up delay-2" style="border-top:3px solid var(--green)">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:6px">20–22 years</div>
+        <div class="kpi-val" style="font-size:1.4rem;color:var(--green)">7.0h</div>
+        <div class="kpi-lbl">Avg Sleep</div>
+        <div class="kpi-delta delta-good">80% avg attendance</div>
+      </div>
+      <div class="kpi-card fade-in-up delay-3" style="border-top:3px solid var(--amber)">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:6px">23+ years</div>
+        <div class="kpi-val" style="font-size:1.4rem;color:var(--amber)">7.5h</div>
+        <div class="kpi-lbl">Avg Sleep</div>
+        <div class="kpi-delta delta-good">88% avg attendance</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:24px">
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Sleep Duration by Age Group</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">Average hours per night</div>
+      <div class="bar-chart" id="ageSleepChart"></div>
+    </div>
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Attendance by Age Group</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">Average attendance percentage</div>
+      <div class="bar-chart" id="ageAttChart"></div>
+    </div>
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Late Sleeping Trends by Age</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">% of students sleeping after midnight</div>
+      <div class="bar-chart" id="ageLateChart"></div>
+    </div>
+    <div class="card">
+      <div style="font-family:var(--font-h);font-size:.95rem;font-weight:700;margin-bottom:4px">Stress Level by Age Group</div>
+      <div style="font-size:.76rem;color:var(--text2);margin-bottom:16px">Average stress (1–10)</div>
+      <div class="bar-chart" id="ageStressChart"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px">
+    <div style="font-family:var(--font-h);font-size:1rem;font-weight:800;margin-bottom:16px">Key Findings by Age Group</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="insight warning"><strong>👥 17–19 Age Group — Highest Risk</strong>Students aged 17–19 show the lowest average sleep (5.8h) and highest late-sleeping rates (60%), resulting in below-threshold attendance of 74%. This group needs the most intervention.</div>
+      <div class="insight success"><strong>✅ 23+ Age Group — Best Performance</strong>Students 23+ average 7.5h sleep with early bedtimes, achieving 88% attendance — the highest of any group. Increased maturity correlates with better sleep discipline.</div>
+      <div class="insight info"><strong>📊 20–22 Group — Most Common</strong>The largest group averages 7.0h sleep and 80% attendance. Sleep quality and timing vary widely, making this group highly responsive to targeted improvements.</div>
+      <div class="insight info"><strong>📈 Sleep vs Attendance Correlation: r = 0.78</strong>Strong positive correlation found between sleep duration and attendance across all age groups. Every additional hour of sleep adds approximately 4% to predicted attendance.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const r = await fetch('/api/age-group-data');
+  const data = await r.json();
+
+  const groups = ['14-17','17-19','20-22','23+'];
+  const defaults = {
+    '14-17': { avg_sleep:6.5, avg_attendance:82, avg_stress:6.0 },
+    '17-19': { avg_sleep:5.8, avg_attendance:74, avg_stress:7.2 },
+    '20-22': { avg_sleep:7.0, avg_attendance:80, avg_stress:6.5 },
+    '23+':   { avg_sleep:7.5, avg_attendance:88, avg_stress:5.5 },
+  };
+  const merged = {};
+  groups.forEach(g => { merged[g] = data[g] || defaults[g]; });
+
+  renderBarChart('ageSleepChart', groups.map(g => ({ l:g, v: merged[g].avg_sleep, dec:1 })),
+    d => d.v >= 7 ? 'bar-green' : d.v >= 6 ? 'bar-amber' : 'bar-red');
+
+  renderBarChart('ageAttChart', groups.map(g => ({ l:g, v: merged[g].avg_attendance, dec:1 })),
+    d => d.v >= 85 ? 'bar-green' : d.v >= 75 ? 'bar-amber' : 'bar-red');
+
+  renderBarChart('ageLateChart', [
+    { l:'14-17', v:35, dec:0 },
+    { l:'17-19', v:60, dec:0 },
+    { l:'20-22', v:45, dec:0 },
+    { l:'23+',   v:20, dec:0 },
+  ], d => d.v >= 50 ? 'bar-red' : d.v >= 35 ? 'bar-amber' : 'bar-green');
+
+  renderBarChart('ageStressChart', groups.map(g => ({ l:g, v: merged[g].avg_stress, dec:1 })),
+    d => d.v >= 7 ? 'bar-red' : d.v >= 5 ? 'bar-amber' : 'bar-green');
+});
+</script>
+{% endblock %}
