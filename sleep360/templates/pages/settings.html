@@ -1,0 +1,53 @@
+{% extends "app.html" %}
+{% block heading %}Settings &amp; data{% endblock %}
+{% block subheading %}Goals, institutional rules, and full control over your data.{% endblock %}
+{% block content %}
+<div class="grid g-2">
+  <section class="card" aria-labelledby="goalsH">
+    <div class="card-head"><div><h2 id="goalsH">Goals &amp; rules</h2><p>These drive your sleep score, bedtime planner and attendance maths.</p></div></div>
+    <form id="settingsForm" class="form-grid" novalidate>
+      <div class="field full"><label for="name">Name</label><input class="input" id="name" name="name" maxlength="80" required></div>
+      <div class="field"><label for="sleep_goal_hours">Sleep goal (hours)</label><input class="input" type="number" id="sleep_goal_hours" name="sleep_goal_hours" min="5" max="11" step="0.25" data-type="float"><span class="hint">Adults: at least 7h recommended</span></div>
+      <div class="field"><label for="target_wake_time">Usual wake-up time</label><input class="input" type="time" id="target_wake_time" name="target_wake_time"></div>
+      <div class="field"><label for="attendance_target">Required attendance (%)</label><input class="input" type="number" id="attendance_target" name="attendance_target" min="50" max="100" step="1" data-type="float"><span class="hint">Your institution's rule, e.g. 75%. Override per subject on the Attendance page.</span></div>
+      <div class="field"><label for="study_goal_hours_week">Study goal (hours / week)</label><input class="input" type="number" id="study_goal_hours_week" name="study_goal_hours_week" min="0" max="80" step="1" data-type="float"></div>
+      <div class="field full"><label for="timezone">Time zone</label><select class="input" id="timezone" name="timezone"></select></div>
+      <label class="check full"><input type="checkbox" name="ai_assistant_enabled" id="ai_assistant_enabled"> Use the AI assistant (sends aggregated numbers, never your email or notes, to the AI provider)</label>
+      <p class="form-error full" role="alert"></p>
+      <div class="full"><button class="btn primary" type="submit">Save changes</button></div>
+    </form>
+  </section>
+
+  <div class="stack">
+    <section class="card" aria-labelledby="dataH">
+      <div class="card-head"><div><h2 id="dataH">Your data</h2><p>It's yours. Take it with you or delete it at any time.</p></div></div>
+      <div class="list">
+        <div class="list-item"><div class="grow"><div class="title">Download everything</div><div class="small muted">All logs, attendance, tasks and chats as JSON</div></div><a class="btn sm" href="/api/v1/account/export" download><svg class="i"><use href="#i-download"/></svg>Export</a></div>
+        <div class="list-item"><div class="grow"><div class="title">Weekly report</div><div class="small muted">A PDF summary of the last 7 days</div></div><a class="btn sm" href="/api/v1/reports/weekly.pdf" download><svg class="i"><use href="#i-download"/></svg>PDF</a></div>
+        <div class="list-item"><div class="grow"><div class="title">Privacy</div><div class="small muted">What we store and why</div></div><a class="btn sm ghost" href="/privacy">Read</a></div>
+      </div>
+    </section>
+
+    <section class="card {% if current_user.is_demo %}hidden{% endif %}" aria-labelledby="pwH">
+      <div class="card-head"><h2 id="pwH">Change password</h2></div>
+      <form id="pwForm" class="stack" novalidate>
+        <div class="field"><label for="current_password">Current password</label><input class="input" type="password" id="current_password" name="current_password" autocomplete="current-password" required></div>
+        <div class="field"><label for="new_password">New password</label><input class="input" type="password" id="new_password" name="new_password" autocomplete="new-password" minlength="8" required><span class="hint">At least 8 characters with a letter and a number</span></div>
+        <p class="form-error" role="alert"></p>
+        <div><button class="btn" type="submit">Update password</button></div>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="delH">
+      <div class="card-head"><div><h2 id="delH">Delete account</h2><p>Permanently removes your account and every record linked to it.</p></div></div>
+      <form id="delForm" class="stack" novalidate>
+        {% if not current_user.is_demo %}
+        <div class="field"><label for="del_password">Confirm with your password</label><input class="input" type="password" id="del_password" name="password" autocomplete="current-password" required></div>
+        {% endif %}
+        <p class="form-error" role="alert"></p>
+        <div><button class="btn danger" type="submit"><svg class="i"><use href="#i-trash"/></svg>Delete my account</button></div>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

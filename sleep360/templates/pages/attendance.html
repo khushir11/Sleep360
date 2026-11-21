@@ -1,0 +1,41 @@
+{% extends "app.html" %}
+{% block subheading %}<span id="semLabel">Exact numbers: how many classes you need, and how many you can safely miss.</span>{% endblock %}
+{% block actions %}
+  <select class="input hidden" id="semSelect" aria-label="Semester"></select>
+  <button class="btn" type="button" id="newSemBtn">New semester</button>
+  <button class="btn primary hidden" type="button" id="addSubjectBtn"><svg class="i"><use href="#i-plus"/></svg><span>Add subject</span></button>
+{% endblock %}
+{% block content %}
+<div id="att" class="stack"><div class="card"><div class="skeleton h-lg"></div></div></div>
+
+<dialog class="modal" id="semModal" aria-labelledby="semH">
+  <form id="semForm" novalidate>
+    <div class="modal-head"><h2 id="semH">New semester</h2><button class="btn icon ghost" type="button" data-close aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body form-grid">
+      <div class="field full"><label for="semName">Name</label><input class="input" id="semName" name="name" required maxlength="80" placeholder="e.g. Semester 4"></div>
+      <div class="field"><label for="semStart">Starts</label><input class="input" type="date" id="semStart" name="start_date" required></div>
+      <div class="field"><label for="semEnd">Ends</label><input class="input" type="date" id="semEnd" name="end_date" required></div>
+      <p class="form-error full" role="alert"></p>
+    </div>
+    <div class="modal-foot"><button class="btn" type="button" data-close>Cancel</button><button class="btn primary" type="submit">Create</button></div>
+  </form>
+</dialog>
+
+<dialog class="modal" id="subModal" aria-labelledby="subH">
+  <form id="subForm" novalidate>
+    <div class="modal-head"><h2 id="subH">Add subject</h2><button class="btn icon ghost" type="button" data-close aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body form-grid">
+      <div class="field"><label for="subName">Subject name</label><input class="input" id="subName" name="name" required maxlength="100"></div>
+      <div class="field"><label for="subCode">Code <span class="faint">(optional)</span></label><input class="input" id="subCode" name="code" maxlength="20" data-nullable></div>
+      <div class="field"><label for="subPerWeek">Classes per week</label><input class="input" type="number" id="subPerWeek" name="classes_per_week" min="0" max="30" step="0.5" value="3" data-type="float" required><span class="hint">Used to forecast remaining classes</span></div>
+      <div class="field"><label for="subTarget">Required % <span class="faint">(optional)</span></label><input class="input" type="number" id="subTarget" name="target_override" min="50" max="100" step="1" data-type="float" data-nullable placeholder="Default from settings"><span class="hint">e.g. labs that need 80%</span></div>
+      <div class="field full"><div class="callout"><svg class="i"><use href="#i-info"/></svg><div class="small">Starting mid-semester? Enter your totals so far. After that, just mark each class.</div></div></div>
+      <div class="field"><label for="subHeld">Classes held so far</label><input class="input" type="number" id="subHeld" name="initial_conducted" min="0" max="2000" value="0" data-type="int"></div>
+      <div class="field"><label for="subAtt">Classes attended so far</label><input class="input" type="number" id="subAtt" name="initial_attended" min="0" max="2000" value="0" data-type="int"></div>
+      <div class="field"><label for="subColor">Colour</label><input class="input" type="color" id="subColor" name="color" value="#5b5bd6"></div>
+      <p class="form-error full" role="alert"></p>
+    </div>
+    <div class="modal-foot"><button class="btn danger hidden" type="button" id="subDelete">Delete subject</button><span class="nav-spacer"></span><button class="btn" type="button" data-close>Cancel</button><button class="btn primary" type="submit">Save</button></div>
+  </form>
+</dialog>
+{% endblock %}

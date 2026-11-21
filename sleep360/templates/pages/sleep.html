@@ -1,0 +1,72 @@
+{% extends "app.html" %}
+{% block subheading %}Log each night in about 20 seconds. Re-logging the same night updates it.{% endblock %}
+{% block actions %}
+  <button class="btn" type="button" id="importBtn"><svg class="i"><use href="#i-upload"/></svg><span>Import CSV</span></button>
+{% endblock %}
+{% block content %}
+<div class="grid g-main">
+  <section class="card" id="log" aria-labelledby="logH">
+    <div class="card-head"><div><h2 id="logH">Log a night</h2><p>Required: bedtime, wake time and quality. The rest makes your insights sharper.</p></div></div>
+    <form id="logForm" novalidate>
+      <div class="form-grid">
+        <div class="field"><label for="bedtime">Went to bed</label><input class="input" type="datetime-local" id="bedtime" name="bedtime" required></div>
+        <div class="field"><label for="wake_time">Woke up</label><input class="input" type="datetime-local" id="wake_time" name="wake_time" required></div>
+        <div class="field full"><div class="callout" id="durationPreview"><svg class="i"><use href="#i-clock"/></svg><div></div></div></div>
+        <div class="field range-field"><label for="quality">Sleep quality <output for="quality" id="qualityOut">6</output>/10</label>
+          <input type="range" id="quality" name="quality" min="1" max="10" value="6" data-type="int"><span class="hint">1 = terrible, 10 = perfect</span></div>
+        <div class="field range-field"><label for="daytime_sleepiness">Daytime sleepiness <output for="daytime_sleepiness" id="sleepyOut">—</output></label>
+          <input type="range" id="daytime_sleepiness" name="daytime_sleepiness" min="1" max="10" value="4" data-type="int" data-optional><span class="hint">How sleepy were you yesterday? 1 = alert, 10 = struggling</span></div>
+        <div class="field range-field"><label for="stress">Stress <output for="stress" id="stressOut">—</output></label>
+          <input type="range" id="stress" name="stress" min="1" max="10" value="5" data-type="int" data-optional></div>
+        <div class="field"><label for="screen">Screens in the hour before bed</label>
+          <select class="input" id="screen" name="screen_minutes_before_bed" data-type="int">
+            <option value="">Skip</option><option value="0">None</option><option value="15">~15 min</option><option value="30">~30 min</option><option value="60">~1 hour</option><option value="90">More than an hour</option>
+          </select></div>
+        <div class="field"><label for="exercise">Exercise yesterday (minutes)</label><input class="input" type="number" id="exercise" name="exercise_minutes" min="0" max="600" step="5" inputmode="numeric" data-type="int" placeholder="e.g. 30"></div>
+        <div class="field"><span class="label">Caffeine after 2pm?</span>
+          <div class="segmented" role="group" aria-label="Caffeine after 2pm" id="caffeineSeg">
+            <button type="button" data-v="" aria-pressed="true">Skip</button><button type="button" data-v="false" aria-pressed="false">No</button><button type="button" data-v="true" aria-pressed="false">Yes</button>
+          </div></div>
+        <div class="field full"><label for="notes">Notes <span class="faint">(private, never sent to the AI)</span></label><textarea class="input" id="notes" name="notes" maxlength="500" rows="2" placeholder="Anything unusual? e.g. exam tomorrow, noisy hostel"></textarea></div>
+      </div>
+      <p class="form-error mt-2" role="alert"></p>
+      <div class="row mt-1"><button class="btn primary" type="submit" id="saveBtn">Save night</button><span class="small muted" id="saveHint"></span></div>
+    </form>
+    <div id="result" class="mt-3 hidden"></div>
+  </section>
+
+  <aside class="stack">
+    <section class="card" aria-labelledby="planH">
+      <div class="card-head"><div><h2 id="planH">Bedtime planner</h2><p>Based on your goal and wake-up time in Settings.</p></div></div>
+      <div id="plan"><div class="skeleton h-lg"></div></div>
+    </section>
+    <section class="card">
+      <h3>Logging tips</h3>
+      <ul class="small muted mt-1">
+        <li>Log in the morning while you still remember.</li>
+        <li>Estimates are fine. Consistency matters more than precision.</li>
+        <li>Daytime sleepiness helps improve the fatigue model over time.</li>
+      </ul>
+    </section>
+  </aside>
+</div>
+
+<section class="card mt-3">
+  <div class="card-head"><div><h2>History</h2><p>Last 30 nights</p></div></div>
+  <div class="table-wrap" id="history"><div class="skeleton h-lg"></div></div>
+</section>
+
+<dialog class="modal" id="importModal" aria-labelledby="importH">
+  <form id="importForm">
+    <div class="modal-head"><h2 id="importH">Import sleep data</h2><button class="btn icon ghost" type="button" data-close aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body stack">
+      <p class="small muted">Upload a CSV from a spreadsheet or wearable export. Needs <code>bedtime</code> and <code>wake_time</code> columns (full date-times, or times plus a <code>date</code> column). Optional: <code>quality</code> (1–10 or 0–100), <code>stress</code>, <code>daytime_sleepiness</code>, <code>screen_minutes</code>, <code>caffeine</code>, <code>exercise_minutes</code>, <code>notes</code>.</p>
+      <div class="field"><label for="csvFile">CSV file (max 2 MB)</label><input class="input" type="file" id="csvFile" name="file" accept=".csv,.tsv,.txt,text/csv" required></div>
+      <label class="check"><input type="checkbox" name="overwrite" value="true"> Overwrite nights I've already logged</label>
+      <a class="small" href="/static/sample-sleep.csv" download>Download a sample CSV</a>
+      <div id="importResult"></div>
+    </div>
+    <div class="modal-foot"><button class="btn" type="button" data-close>Close</button><button class="btn primary" type="submit">Import</button></div>
+  </form>
+</dialog>
+{% endblock %}

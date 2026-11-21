@@ -1,0 +1,68 @@
+{% extends "app.html" %}
+{% block heading %}<span id="greeting">Welcome back</span>{% endblock %}
+{% block subheading %}<span id="todayLabel"></span>{% endblock %}
+{% block actions %}
+  <a class="btn primary" href="{{ url_for('web.page', name='sleep') }}#log"><svg class="i"><use href="#i-plus"/></svg><span>Log sleep</span></a>
+{% endblock %}
+{% block content %}
+<div id="dash" class="stack" aria-busy="true">
+  <div class="grid g-4">
+    <div class="card"><div class="skeleton h-md"></div></div><div class="card"><div class="skeleton h-md"></div></div>
+    <div class="card"><div class="skeleton h-md"></div></div><div class="card"><div class="skeleton h-md"></div></div>
+  </div>
+  <div class="grid g-main"><div class="card"><div class="skeleton h-lg"></div></div><div class="card"><div class="skeleton h-lg"></div></div></div>
+</div>
+
+<template id="dashTpl">
+  <div class="grid g-4">
+    <div class="card kpi"><div class="label"><svg class="i"><use href="#i-moon"/></svg>Last night</div><div class="value" data-k="last"></div><div class="meta" data-k="lastMeta"></div></div>
+    <div class="card kpi"><div class="label"><svg class="i"><use href="#i-chart"/></svg>7-day average</div><div class="value" data-k="avg"></div><div class="meta" data-k="avgMeta"></div></div>
+    <div class="card kpi"><div class="label"><svg class="i"><use href="#i-calendar"/></svg>Attendance</div><div class="value" data-k="att"></div><div class="meta" data-k="attMeta"></div></div>
+    <div class="card kpi"><div class="label"><svg class="i"><use href="#i-battery"/></svg>Fatigue estimate</div><div class="value" data-k="fat"></div><div class="meta" data-k="fatMeta"></div></div>
+  </div>
+
+  <div class="grid g-main">
+    <section class="card" aria-labelledby="scoreH">
+      <div class="card-head"><div><h2 id="scoreH">Sleep score</h2><p data-k="scoreDate"></p></div><a class="btn sm ghost" href="/model">How it's calculated</a></div>
+      <div data-k="scoreBody"></div>
+    </section>
+    <section class="card" aria-labelledby="goalsH">
+      <div class="card-head"><h2 id="goalsH">Today</h2><span class="pill accent" data-k="streakPill"></span></div>
+      <div data-k="goals"></div>
+      <div class="mt-2 callout" data-k="bedtime"></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="card-head"><div><h2>Last 14 nights</h2><p>Bars show hours slept; the line is your sleep score.</p></div><a class="btn sm ghost" href="/insights">All analytics</a></div>
+    <div class="chart-box"><canvas id="trendChart" aria-label="Sleep duration and score over the last 14 nights" role="img"></canvas></div>
+  </section>
+
+  <div class="grid g-2">
+    <section class="card">
+      <div class="card-head"><h2>Recommended for you</h2><a class="btn sm ghost" href="/insights#recs">See all</a></div>
+      <div class="stack" data-k="recs"></div>
+    </section>
+    <div class="stack">
+      <section class="card">
+        <div class="card-head"><h2>Attendance</h2><a class="btn sm ghost" href="/attendance">Manage</a></div>
+        <div data-k="subjects"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Due this week</h2><a class="btn sm ghost" href="/planner">Planner</a></div>
+        <div data-k="tasks"></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="card">
+    <div class="card-head"><div><h2>Streaks &amp; badges</h2><p data-k="challengeText"></p></div></div>
+    <div class="grid g-3">
+      <div class="streak"><div class="ic"><svg class="i"><use href="#i-flame"/></svg></div><div><strong data-k="logStreak"></strong><div class="small muted">day logging streak</div></div></div>
+      <div class="streak"><div class="ic"><svg class="i"><use href="#i-battery"/></svg></div><div><strong data-k="goalStreak"></strong><div class="small muted">nights meeting your goal</div></div></div>
+      <div><div class="row-between small"><span class="muted">Consistency challenge</span><strong data-k="challengeCount"></strong></div><div class="challenge-dots mt-1" data-k="challengeDots"></div></div>
+    </div>
+    <div class="badges mt-3" data-k="badges"></div>
+  </section>
+</template>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "public.html" %}
+{% block content %}
+<article class="prose">
+  <span class="eyebrow"><svg class="i"><use href="#i-shield"/></svg>Privacy</span>
+  <h1>Your data, your control</h1>
+  <h2>What we store</h2>
+  <p>Your name, email and a salted password hash (scrypt; we never store your password). We also store the sleep logs, attendance, tasks, study sessions and chat messages you enter, plus scores calculated from them.</p>
+  <h2>Who can see it</h2>
+  <p>Only you. Every database query is scoped to your account. Requests for another user's records return "not found". There are no cohort comparisons, leaderboards or public profiles. Demo accounts are isolated sandboxes, deleted after 48 hours.</p>
+  <h2>The AI assistant</h2>
+  <p>When the AI assistant is enabled and configured, a summary of your recent <em>numbers</em> (averages, scores, attendance percentages, task titles) is sent to the AI provider (Anthropic) to generate a reply. Your email and free-text sleep notes are never sent. You can turn the AI off in Settings; the built-in guide then answers locally.</p>
+  <h2>Your rights</h2>
+  <p>Download everything as JSON or delete your account at any time from <a href="/settings">Settings</a>. Deletion removes every linked record immediately.</p>
+  <h2>Health disclaimer</h2>
+  <p>Sleep360 offers general wellness information, not medical advice, diagnosis or treatment. If you're struggling, please reach out to your campus counsellor or a doctor. In India, Tele-MANAS offers free, 24/7 mental-health support at <strong>14416</strong>. In an emergency, call <strong>112</strong>.</p>
+</article>
+{% endblock %}

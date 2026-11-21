@@ -1,0 +1,21 @@
+{% extends "app.html" %}
+{% block subheading %}<span id="aiStatus">Answers grounded in your own sleep, attendance and study data.</span>{% endblock %}
+{% block actions %}<button class="btn ghost" type="button" id="clearBtn"><svg class="i"><use href="#i-trash"/></svg><span>Clear chat</span></button>{% endblock %}
+{% block content %}
+<section class="card flush chat" aria-label="Wellness assistant">
+  <div class="chat-log" id="log" aria-live="polite"><div class="skeleton h-md"></div></div>
+  <div class="suggestions" id="suggestions">
+    <button type="button">How am I doing this week?</button>
+    <button type="button">Why did my sleep score change?</button>
+    <button type="button">What time should I go to bed?</button>
+    <button type="button">How many classes can I skip?</button>
+    <button type="button">I have an exam in 3 days. How should I plan my sleep?</button>
+  </div>
+  <form class="chat-form" id="chatForm">
+    <label class="sr-only" for="msg">Message</label>
+    <textarea class="input" id="msg" name="message" maxlength="2000" placeholder="Ask about your sleep, stress, attendance or study plan…" rows="1" required></textarea>
+    <button class="btn primary" type="submit" aria-label="Send"><svg class="i"><use href="#i-send"/></svg></button>
+  </form>
+</section>
+<p class="tiny faint mt-1">General wellness guidance, not medical advice. Only aggregated numbers (never your email or notes) are sent to the AI provider when AI is enabled. You can turn it off in Settings.</p>
+{% endblock %}

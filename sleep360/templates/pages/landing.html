@@ -1,0 +1,42 @@
+{% extends "public.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <span class="eyebrow"><svg class="i"><use href="#i-sparkle"/></svg>Built for college students</span>
+    <h1>Sleep better. Show up. Keep up.</h1>
+    <p class="lead">Sleep360 connects your sleep, attendance and study plan in one place. It shows how many classes you can safely miss, plans study that ends before bedtime, and explains the patterns in your own data.</p>
+    <div class="cta">
+      <a class="btn primary" href="{{ url_for('web.register') }}">Create free account</a>
+      <button class="btn" type="button" data-demo><svg class="i"><use href="#i-play"/></svg>Try the demo</button>
+    </div>
+    <p class="small faint mt-2">The demo builds a private sandbox with sample data. No sign-up needed.</p>
+  </div>
+  <div class="preview" aria-hidden="true">
+    <div class="grid g-2">
+      <div class="card kpi"><div class="label">Last night</div><div class="value">7h 20m</div><div class="meta">23:35 → 07:00 · quality 7/10</div></div>
+      <div class="card kpi"><div class="label">Attendance</div><div class="value">78.4<small>%</small></div><div class="meta"><span class="pill warn">OS: 2 safe skips</span></div></div>
+    </div>
+    <div class="card"><div class="row-between"><strong>Today's plan</strong><span class="pill accent">study until 21:45</span></div>
+      <div class="timeline mt-2">
+        <div class="block"><span class="time">17:00–17:50</span><div class="title">OS mid-term revision</div></div>
+        <div class="block break"><span class="time">17:50–18:00</span><div>Break</div></div>
+        <div class="block wind_down"><span class="time">21:45–22:45</span><div class="title">Wind down</div></div>
+      </div></div>
+    <div class="callout"><svg class="i"><use href="#i-info"/></svg><div class="small">Your score dropped 12 points because you went to bed 70 min later than usual.</div></div>
+  </div>
+</section>
+
+<section class="features" aria-label="Features">
+  <div class="card feature"><div class="ic"><svg class="i"><use href="#i-moon"/></svg></div><h3>Sleep score you can understand</h3><p>Four transparent components (duration, regularity, quality, timing) and a plain-English reason every time it changes.</p></div>
+  <div class="card feature"><div class="ic"><svg class="i"><use href="#i-calendar"/></svg></div><h3>Attendance maths, done right</h3><p>Subject-wise tracking, exact "classes needed" and "safe skips", end-of-semester forecasts and shortage alerts based on your institution's rule.</p></div>
+  <div class="card feature"><div class="ic"><svg class="i"><use href="#i-list"/></svg></div><h3>Sleep-friendly study planner</h3><p>Spreads assignments and exams across days and stops before your wind-down. After a short night, the plan gets lighter.</p></div>
+  <div class="card feature"><div class="ic"><svg class="i"><use href="#i-chat"/></svg></div><h3>An assistant that knows your data</h3><p>Ask "why did my score drop?" or "how many classes can I skip?" and get answers built on your own numbers, with a safe fallback when AI is off.</p></div>
+  <div class="card feature"><div class="ic"><svg class="i"><use href="#i-chart"/></svg></div><h3>Analytics &amp; weekly reports</h3><p>Trends, sleep windows, weekday patterns and habit consistency, plus a downloadable PDF report each week.</p></div>
+  <div class="card feature"><div class="ic"><svg class="i"><use href="#i-flame"/></svg></div><h3>Streaks &amp; challenges</h3><p>Logging streaks, a 7-night consistency challenge and badges that reward healthy habits, not all-nighters.</p></div>
+</section>
+
+<section class="honesty">
+  <div><h2>Honest by design</h2><p class="muted mt-1">The fatigue estimate comes from a machine-learning pipeline trained on <strong>simulated</strong> data, because no real student dataset was available. We say so everywhere it appears, publish the model card, and built the pipeline to retrain on real, consented data later.</p><a class="btn mt-2" href="{{ url_for('web.model') }}">Read the model card</a></div>
+  <div><h2>Private by default</h2><p class="muted mt-1">Your records are visible only to you. There are no cohort leaderboards and no data selling. Export everything as JSON or delete your account with one click. Sleep360 offers wellness guidance, not diagnoses.</p><a class="btn mt-2" href="{{ url_for('web.privacy') }}">Privacy details</a></div>
+</section>
+{% endblock %}

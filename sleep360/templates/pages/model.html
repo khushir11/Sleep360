@@ -1,0 +1,34 @@
+{% extends "public.html" %}
+{% block content %}
+<article class="prose">
+  <span class="eyebrow"><svg class="i"><use href="#i-beaker"/></svg>Model card</span>
+  <h1>How Sleep360's numbers are calculated</h1>
+  <p class="mt-2">Sleep360 uses three kinds of numbers. They have very different levels of certainty, so here is what each one is.</p>
+
+  <h2>1. Attendance figures are exact arithmetic</h2>
+  <p>Percentages, "classes needed" and "safe skips" are exact calculations from the classes you mark. For example, to reach target <code>t</code> from <code>A</code> attended out of <code>C</code> held, you need <code>⌈(t·C − A) / (1 − t)⌉</code> consecutive classes. Forecasts assume your subject's weekly schedule continues until the semester end date, and that your last 4 weeks' attendance rate continues.</p>
+
+  <h2>2. The sleep score is a transparent heuristic</h2>
+  <p>A 0–100 score built from four parts: <strong>duration</strong> versus your goal (40), <strong>regularity</strong> of bedtime versus your previous week (25), self-rated <strong>quality</strong> (20), and <strong>timing</strong> versus the bedtime your goal and wake-up time require (15). It's a guide we designed, not a clinical measure. The dashboard always shows which parts changed.</p>
+
+  <h2>3. The fatigue estimate is machine learning on simulated data</h2>
+  <div class="callout warn mt-1"><svg class="i"><use href="#i-alert"/></svg><div><strong>Important:</strong> no real student data was used to train this model. It was trained on simulated students whose fatigue follows rules we wrote, with directions based on sleep research and magnitudes we assumed. Its accuracy shows how well the pipeline recovers a known signal. It is <em>not</em> evidence about real students.</div></div>
+  <p class="mt-2">Why build it at all? It demonstrates the full pipeline (feature engineering, grouped cross-validation, model comparison, calibration and explanations) that can be retrained on real data. The app collects an optional daily <em>daytime sleepiness</em> rating, which serves as a real label. With enough consented data, <code>flask ml train --source db</code> retrains on it using the same code.</p>
+</article>
+
+<div id="card" class="stack mt-3"><div class="card"><div class="skeleton h-lg"></div></div></div>
+
+<article class="prose mt-3">
+  <h2>Limitations</h2>
+  <ul>
+    <li>Not a medical device. It doesn't diagnose insomnia, sleep apnoea, depression or any condition.</li>
+    <li>Inputs are self-reported, which means they're noisy and subject to recall bias.</li>
+    <li>Explanations are approximate "what-if" effects: each factor is swapped for a typical value and the change in risk is measured. They are not additive and not causal.</li>
+    <li>If sleep problems persist or affect your daily life, please talk to a doctor.</li>
+  </ul>
+</article>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}" defer></script>
+  <script type="module" src="{{ url_for('static', filename='js/pages/model.js') }}"></script>
+{% endblock %}

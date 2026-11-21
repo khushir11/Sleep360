@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Sign in' if mode == 'login' else 'Create account' }} · Sleep360{% endblock %}
+{% block body %}
+<main class="auth-wrap">
+  <div class="card auth-card">
+    <a class="brand" href="{{ url_for('web.landing') }}"><span class="brand-mark"><svg class="i"><use href="#i-moon"/></svg></span> Sleep360</a>
+    {% if mode == 'login' %}
+      <h1>Welcome back</h1><p class="sub">Sign in to your account</p>
+    {% else %}
+      <h1>Create your account</h1><p class="sub">Free. Your data stays private to you.</p>
+    {% endif %}
+    <form id="authForm" data-mode="{{ mode }}" class="stack" novalidate>
+      {% if mode == 'register' %}
+      <div class="field"><label for="name">Name</label><input class="input" id="name" name="name" autocomplete="name" required maxlength="80"></div>
+      {% endif %}
+      <div class="field"><label for="email">Email</label><input class="input" type="email" id="email" name="email" autocomplete="email" required></div>
+      <div class="field"><label for="password">Password</label><input class="input" type="password" id="password" name="password" autocomplete="{{ 'current-password' if mode == 'login' else 'new-password' }}" required minlength="{{ 1 if mode == 'login' else 8 }}">
+        {% if mode == 'register' %}<span class="hint">At least 8 characters, with a letter and a number</span>{% endif %}</div>
+      {% if mode == 'login' %}<label class="check"><input type="checkbox" name="remember"> Keep me signed in</label>{% endif %}
+      <p class="form-error" role="alert"></p>
+      <button class="btn primary block" type="submit">{{ 'Sign in' if mode == 'login' else 'Create account' }}</button>
+    </form>
+    <div class="divider">or</div>
+    <button class="btn block" type="button" data-demo><svg class="i"><use href="#i-play"/></svg>Explore the demo</button>
+    <p class="small muted mt-2">
+      {% if mode == 'login' %}New here? <a href="{{ url_for('web.register') }}">Create an account</a>{% else %}Already have an account? <a href="{{ url_for('web.login') }}">Sign in</a>{% endif %}
+    </p>
+  </div>
+</main>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/public.js') }}"></script>{% endblock %}

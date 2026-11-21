@@ -1,0 +1,61 @@
+{% extends "app.html" %}
+{% block subheading %}A study plan that ends before your wind-down, so deadlines don't cost you sleep.{% endblock %}
+{% block actions %}
+  <button class="btn primary" type="button" id="addTaskBtn"><svg class="i"><use href="#i-plus"/></svg><span>Add task</span></button>
+{% endblock %}
+{% block content %}
+<div class="grid g-main">
+  <section class="card" aria-labelledby="planH">
+    <div class="card-head">
+      <div><h2 id="planH">Today's plan</h2><p id="planMeta"></p></div>
+      <div class="row"><label class="sr-only" for="planStart">Start studying at</label><input class="input" type="time" id="planStart" title="Start time"></div>
+    </div>
+    <div id="planNotes" class="stack"></div>
+    <div id="plan" class="timeline mt-2"><div class="skeleton h-lg"></div></div>
+  </section>
+
+  <aside class="stack">
+    <section class="card" aria-labelledby="timerH">
+      <div class="card-head"><h2 id="timerH">Focus timer</h2><span class="pill" id="timerMode">Focus</span></div>
+      <div class="kpi"><div class="value num" id="timerClock" aria-live="off">50:00</div><div class="meta" id="timerMeta">50 min focus, then a 10 min break</div></div>
+      <div class="field mt-2"><label for="timerTask">Working on</label><select class="input" id="timerTask"><option value="">General study</option></select></div>
+      <div class="row mt-2">
+        <button class="btn primary" type="button" id="timerStart"><svg class="i"><use href="#i-play"/></svg><span>Start</span></button>
+        <button class="btn" type="button" id="timerStop" disabled>Stop &amp; save</button>
+      </div>
+      <p class="tiny faint mt-1">We'll remind you to take a break. Sessions count towards your weekly study goal.</p>
+    </section>
+    <section class="card">
+      <div class="card-head"><h2>This week</h2></div>
+      <div id="weekStudy"></div>
+    </section>
+  </aside>
+</div>
+
+<section class="card mt-3">
+  <div class="card-head"><h2>Tasks</h2>
+    <div class="segmented" role="group" aria-label="Filter tasks"><button type="button" data-filter="open" aria-pressed="true">Open</button><button type="button" data-filter="done" aria-pressed="false">Completed</button></div></div>
+  <div id="tasks"><div class="skeleton h-lg"></div></div>
+</section>
+
+<div class="grid g-2 mt-3">
+  <section class="card"><div class="card-head"><div><h2>Study hours</h2><p>Last 14 days</p></div></div><div class="chart-box short"><canvas id="studyChart" role="img" aria-label="Study minutes per day"></canvas></div></section>
+  <section class="card"><div class="card-head"><div><h2>By subject</h2><p>Last 14 days</p></div></div><div id="bySubject"></div><div id="corr" class="mt-2"></div></section>
+</div>
+
+<dialog class="modal" id="taskModal" aria-labelledby="taskH">
+  <form id="taskForm" novalidate>
+    <div class="modal-head"><h2 id="taskH">Add task</h2><button class="btn icon ghost" type="button" data-close aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body form-grid">
+      <div class="field full"><label for="tTitle">Title</label><input class="input" id="tTitle" name="title" required maxlength="160" placeholder="e.g. DBMS assignment 3"></div>
+      <div class="field"><label for="tKind">Type</label><select class="input" id="tKind" name="kind"><option value="assignment">Assignment</option><option value="exam">Exam</option><option value="study">Study / revision</option><option value="other">Other</option></select></div>
+      <div class="field"><label for="tSubject">Subject</label><select class="input" id="tSubject" name="subject_id" data-type="int" data-nullable><option value="">None</option></select></div>
+      <div class="field"><label for="tDue">Due</label><input class="input" type="datetime-local" id="tDue" name="due_at" data-nullable></div>
+      <div class="field"><label for="tEst">Estimated work (minutes)</label><input class="input" type="number" id="tEst" name="estimated_minutes" min="5" max="6000" step="5" value="60" data-type="int"><span class="hint">For exams, total revision time</span></div>
+      <div class="field"><label for="tPri">Priority</label><select class="input" id="tPri" name="priority" data-type="int"><option value="1">High</option><option value="2" selected>Normal</option><option value="3">Low</option></select></div>
+      <p class="form-error full" role="alert"></p>
+    </div>
+    <div class="modal-foot"><button class="btn danger hidden" type="button" id="taskDelete">Delete</button><span class="nav-spacer"></span><button class="btn" type="button" data-close>Cancel</button><button class="btn primary" type="submit">Save</button></div>
+  </form>
+</dialog>
+{% endblock %}

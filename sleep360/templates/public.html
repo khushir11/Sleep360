@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="public">
+  <nav class="public-nav" aria-label="Site">
+    <a class="brand" href="{{ url_for('web.landing') }}"><span class="brand-mark"><svg class="i"><use href="#i-moon"/></svg></span> Sleep360</a>
+    <div class="row">
+      <a class="btn ghost" href="{{ url_for('web.model') }}">The model</a>
+      {% if current_user.is_authenticated %}
+        <a class="btn primary" href="{{ url_for('web.page', name='dashboard') }}">Open app</a>
+      {% else %}
+        <a class="btn ghost" href="{{ url_for('web.login') }}">Sign in</a>
+        <a class="btn primary" href="{{ url_for('web.register') }}">Get started</a>
+      {% endif %}
+    </div>
+  </nav>
+  {% block content %}{% endblock %}
+  <footer class="footer">
+    <span>Sleep360 · general wellness guidance, not medical advice.</span>
+    <span><a href="{{ url_for('web.privacy') }}">Privacy</a> · <a href="{{ url_for('web.model') }}">Model card</a> · <a href="https://github.com/khushir11/Sleep360">GitHub</a></span>
+  </footer>
+</div>
+{% endblock %}
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pages/public.js') }}"></script>{% endblock %}

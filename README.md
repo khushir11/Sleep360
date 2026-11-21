@@ -1,359 +1,171 @@
 # Sleep360
 
-🚀 **[Live Demo](https://sleep360.onrender.com)**
+**A student wellness platform that connects sleep, attendance and study planning, and explains its numbers honestly.**
 
-AI-powered sleep and attendance prediction system. 
-<div align="center">
+[![CI](https://github.com/khushir11/Sleep360/actions/workflows/ci.yml/badge.svg)](https://github.com/khushir11/Sleep360/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.13-blue) ![Flask](https://img.shields.io/badge/flask-3.1-black) ![Postgres](https://img.shields.io/badge/postgres-16-336791) ![scikit--learn](https://img.shields.io/badge/scikit--learn-1.9-f7931e) ![License](https://img.shields.io/badge/license-MIT-green)
 
-# 🌙 Sleep360
+Students log a night in about 20 seconds and mark classes as they go. Sleep360 then:
 
-### *Smart Sleep & Attendance Intelligence System*
+- scores each night with a **transparent 4-part sleep score** and explains in plain English why it changed;
+- does **exact attendance maths**: classes needed to reach the target, safe skips, end-of-semester forecast and "what-if" simulation, all configurable to the institution's rule;
+- builds a **sleep-friendly study plan** that spreads deadlines across days and never schedules work after the wind-down;
+- produces a **fatigue estimate** from an ML pipeline (LR / RF / GB compared with grouped CV), with per-user explanations and a public model card that says plainly it's trained on simulated data;
+- answers questions through an **AI assistant (Claude)** grounded in the user's own numbers, with a crisis-safety layer and a deterministic fallback;
+- generates **recommendations, notifications, streaks/badges, analytics and a weekly PDF report**.
 
-[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Flask](https://img.shields.io/badge/Flask-3.0%2B-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com)
-[![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
-[![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)](https://chartjs.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)]()
+<p align="center"><img src="docs/screenshots/dashboard.jpg" width="880" alt="Dashboard"></p>
 
-<br/>
-
-> A healthcare-focused ML web application that predicts student **attendance risk** and **fatigue levels** based on sleep behaviour, lifestyle patterns, and academic factors — delivering personalised, data-driven insights to support student well-being.
-
-<br/>
-
-[📸 Screenshots](#-screenshots) • [🚀 Quick Start](#-quick-start) • [🧠 ML Engine](#-machine-learning-engine) • [📁 Project Structure](#-project-structure) • [🔮 Roadmap](#-future-scope)
-
-</div>
+| Attendance | Insights | Mobile |
+|---|---|---|
+| <img src="docs/screenshots/attendance.jpg" alt="Attendance"> | <img src="docs/screenshots/insights.jpg" alt="Insights"> | <img src="docs/screenshots/mobile.jpg" alt="Mobile"> |
 
 ---
 
-## 📌 Overview
+## Contents
+[Features](#features) · [Architecture](#architecture) · [Quick start](#quick-start) · [Configuration](#environment-variables) · [Testing](#testing) · [Deployment](#deployment) · [ML](#machine-learning) · [Limitations](#limitations) · Docs: [Architecture](docs/ARCHITECTURE.md) · [API](docs/API.md) · [ML](docs/ML.md) · [Interview guide](docs/INTERVIEW_GUIDE.md) · [Changelog](CHANGELOG.md)
 
-**Sleep360** bridges the gap between **sleep science** and **student academic performance**. Students submit their sleep and lifestyle data through an interactive form with a **live prediction preview**, and the system runs a custom **multi-factor weighted model** to:
+## Features
 
-- 📊 Predict attendance percentage from 8 sleep & lifestyle inputs
-- 🚨 Classify attendance shortage risk as **High / Moderate / Low**
-- 😴 Assess chronic fatigue risk with actionable health recommendations
-- 📈 Generate a personal **Sleep Score (0–100)**
-- 🔮 Show a **Trend Projection** — how habits changes would improve attendance
-- 📐 Break down each **Factor's Impact** on attendance (e.g. Late Sleep: −8.0%)
-- 👥 Compare cohort-level data across **4 age bands** (14–17, 17–19, 20–22, 23+)
-- 🔬 Display a **Research Dashboard** with Pearson r = 0.78 sleep-vs-attendance correlation
-
----
-
-## 📸 Screenshots
-
-### 🏠 Home — *"Smarter Sleep. Better Attendance."*
-![Home Page](screenshots/01_home.jpeg)
-> Hero landing page with Sleep Score card (78/100), Attendance Risk indicator (MODERATE), and AI Prediction boost widget (+12% possible).
-
----
-
-### 📋 Upload Data — *Interactive Sliders with Live Preview*
-![Upload Data](screenshots/02_upload.jpeg)
-> Real-time prediction preview updates as sliders move. Shows sleep duration, deep sleep %, sleep quality, attendance counts — with a Quick Tips sidebar.
-
----
-
-### 🔮 AI Predictions — *Factor Impact & Trend Projection*
-![AI Predictions](screenshots/06_predictions.jpeg)
-> AI Forecast (63% → HIGH RISK), recommended sleep (7.5h), 4-stage colour-coded trend bars (Current 63 → Mod Fix 73 → Full Opt 83 → Target 85), and per-feature attendance contribution.
-
----
-
-### 📅 Attendance — *Risk Meter & Breakdown Dashboard*
-![Attendance](screenshots/04_attendance.jpeg)
-> Platform stats (78.5% avg, 55/70 avg days, 1.8 late arrivals), Attendance Risk Meter, risk distribution (Safe >85% / Warn 75–85% / Risk <75%), and Missed Hours Impact chart.
-
----
-
-### 👥 Age Insights — *Cohort Analytics Across Age Groups*
-![Age Insights](screenshots/03_age_insights.jpeg)
-> Four age-group summary cards with comparative bar charts for Sleep Duration, Attendance %, Late Sleeping Trends (17–19 yr: 60% late sleepers), and Stress Levels by group.
-
----
-
-### 🔬 Research — *Sleep vs Attendance Correlation*
-![Research](screenshots/05_research.jpeg)
-> Key findings: 33.3% sleep under 6h (CRITICAL), 66.7% late sleepers, Pearson r = 0.78 correlation chart, Habit Impact breakdown (Late Sleep −8%, High Screen −12%, Low Exercise −18%).
-
----
-
-## ✨ Features
-
-| Feature | Description |
+| Area | What it does |
 |---|---|
-| 🧠 **ML Prediction Engine** | Custom 8-feature weighted model predicts attendance % with explainable weights |
-| ⚡ **Live Preview Panel** | Sliders update Sleep Score + predicted attendance in real time |
-| 🔮 **Trend Projection** | 4-stage bar chart showing improvement path to target attendance |
-| 📐 **Factor Impact Breakdown** | Per-feature contribution display (e.g. Sleep Duration +4.0%/hr, Late Sleep −8.0%) |
-| 📊 **Personal Dashboard** | Visual charts, score history, and risk summary per student |
-| 📅 **Attendance Tracker** | Present/total days, late arrivals, missed first-hour tracking |
-| 💤 **Sleep Score (0–100)** | Composite score: duration (40pts) + deep sleep % (30pts) + timing (30pts) |
-| 🔴 **3-Tier Risk System** | Colour-coded: Low / Moderate / High with actionable recommendations |
-| 💡 **Smart Insights** | Contextual, research-backed health cards per student |
-| 👥 **Age Group Analytics** | 4 age cohorts × 4 chart types: sleep, attendance, late trends, stress |
-| 🔬 **Research Dashboard** | Pearson correlation, habit impact analysis, key statistical findings table |
-| 🌑 **Dark Theme UI** | Polished dark interface with gradient accents and responsive layout |
+| **Dashboard** | Last night, 7-day average and sleep debt, attendance, fatigue estimate, sleep score with component bars and a "why it changed" explanation, today's goals, tonight's bedtime, 14-night chart, top recommendations, deadlines, streaks and badges. |
+| **Sleep logging** | One row per night (upsert by wake date). Bed/wake time, quality, optional stress, daytime sleepiness, screens, caffeine, exercise and private notes. History, delete, **CSV import pipeline** for spreadsheets and wearable exports. |
+| **Bedtime planner** | Goal-based bedtime, wind-down, screens-off and last-caffeine times, plus approximate 90-minute-cycle options. |
+| **Attendance** | Semesters → subjects → per-class records (present / absent / cancelled; cancelled classes don't count). Opening balances for mid-semester starts, per-subject target overrides (e.g. 80% labs), classes needed, safe skips, remaining-class forecast, max achievable %, projected end %, weekly trend, monthly history, what-if simulator. |
+| **Study planner** | Tasks (assignments, exams, study) with estimates and due dates. Daily plan with 50/10 focus blocks that stops 60 minutes before bedtime, and a 25% lighter plan after a short night. Focus timer with break reminders that logs study sessions. Weekly goal progress, by-subject breakdown and a cautious sleep↔study correlation from the user's own data. |
+| **Recommendations** | Rule engine (15 rules): short sleep, sleep debt, irregular schedule, social jet lag, late bedtime, screens rising, late caffeine, stress (with helpline at high levels), low activity, attendance shortage / near-limit / declining, exam-week sleep, positive reinforcement. Each card shows *why* (your numbers) and a source. |
+| **Insights** | 2W / 30D / 90D analytics: duration and score, sleep-window chart, weekday pattern, stress, screens and sleepiness, attendance trend, per-feature fatigue drivers, week-by-week consistency table. |
+| **Assistant** | Claude via the Anthropic API with a compact numeric context (no email or notes). A crisis-language check runs first and returns a fixed response with helplines. Falls back to a deterministic, data-grounded intent engine when there's no key or on any error. |
+| **Engagement** | Logging and sleep-goal streaks, a 7-night consistency challenge, 8 badges, in-app notifications (bedtime, missing log, attendance alerts, deadlines, weekly report) with optional browser notifications. |
+| **Privacy** | Per-user scoping on every query (foreign IDs → 404), JSON export, one-click account deletion (cascades), isolated 48-hour demo sandboxes, public model card and privacy page. |
 
----
-
-## 🧠 Machine Learning Engine
-
-Sleep360's engine is a **transparent, explainable model** — every weight has a scientific justification, making it ideal for portfolio and academic discussion.
-
-### Attendance Prediction Formula
+## Architecture
 
 ```
-attendance_score = 50
-  + (sleep_duration − 4) × 4.0    →  Sleep Duration:    +4.0% per extra hour
-  + sleep_quality × 1.5            →  Sleep Quality:     subjective rating weight
-  + deep_sleep_percentage × 0.3    →  Deep Sleep %:      +0.3% per 1% deep sleep
-  − sleep_timing × 8.0             →  Late Sleep:        −8.0% penalty
-  + study_hours × 2.0              →  Study Hours:       +2.0% per hour
-  − screen_time × 1.5              →  Screen Time:       −1.5% per hour
-  + physical_activity × 0.8        →  Physical Activity: +0.8% per hour/week
-  − (stress_level − 5) × 1.2       →  Stress Level:      −1.2% above baseline
+Browser (Jinja page shells + ES-module JS + Chart.js, no build step)
+   │  fetch /api/v1/*  (session cookie + X-CSRFToken)
+   ▼
+Flask app factory ─ blueprints: web (pages) · api (REST v1)
+   │  Pydantic validation → service layer (pure Python, unit-tested)
+   │     sleep_metrics · attendance · planner · recommendations · assessments
+   │     importer (CSV ETL) · assistant · notifications · achievements · reports
+   ├─ ml/  features (shared train/serve) · synthetic · train · predictor
+   ├─ SQLAlchemy 2.0 models ─ Alembic migrations ─ Postgres (prod) / SQLite (dev)
+   └─ Anthropic API (optional)
 ```
 
-### Algorithms & Models
-
-| Component | Method |
-|---|---|
-| **Attendance Prediction** | Weighted Linear Scoring (custom, fully explainable) |
-| **Risk Classification** | Multi-threshold classifier (≥85% Low / 75–84% Moderate / <75% High) |
-| **Fatigue Assessment** | Rule-based additive scoring (6 behavioural signal flags) |
-| **Sleep Score** | Composite weighted formula (3 components → 0–100 scale) |
-| **Trend Projection** | Scenario simulation: +10pt and +22pt improvement paths |
-| **Cohort Analytics** | Segmented group aggregation with Pearson r correlation |
-
-### Feature → Output Mapping
-
-```
-Input Features (8):             Output Predictions (4):
-────────────────────            ──────────────────────────────
-sleep_duration          →       predicted_attendance (0–100%)
-deep_sleep_percentage   →       attendance_risk_level
-sleep_timing            →       fatigue_risk_level
-sleep_quality           →       sleep_score (0–100)
-study_hours
-screen_time
-physical_activity
-stress_level
-```
-
----
-
-## 🛠️ Technologies Used
-
-**Backend**
-- 🐍 Python 3.9+ with typed `dataclasses` for clean ML data structures
-- 🌐 Flask 3.0 — web framework and RESTful API layer
-- 🗄️ SQLite — zero-config relational DB, auto-created on first run
-
-**Frontend**
-- 🎨 HTML5 + CSS3 with Jinja2 templating
-- ⚡ Vanilla JavaScript — live preview engine, API calls, dynamic rendering
-- 📊 Chart.js — interactive bar charts across all analytics views
-
-**Architecture**
-- 🏗️ MVC-inspired: ML engine (`analysis.py`), DB layer (`database.py`), routing (`app.py`)
-- 🔌 REST API with 7 JSON endpoints (`/api/*`)
-- 🔐 Flask session-based authentication
-- 🌱 Auto-seeded demo database with 8 realistic student profiles
-
----
-
-## 📁 Project Structure
+Key decisions (details in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)):
+- **Thin routes, fat services.** All logic lives in `sleep360/services/`, so it can be tested without HTTP.
+- **One feature function for training and serving** (`ml/features.py`), which prevents training/serving skew.
+- **Assessments are persisted per user-day**, so "why did my score change?" is a diff, not a guess.
+- **Server-rendered shells plus a JSON API** instead of a SPA: one deployable, no Node build, and the API is ready for a mobile client.
+- **Strict CSP** (`script-src 'self'`): Chart.js and the Inter font are vendored, with no inline scripts or styles.
 
 ```
 sleep360/
-│
-├── app.py                    # Flask entry point — all routes & API endpoints
-│
-├── backend/
-│   ├── __init__.py
-│   ├── analysis.py           # 🧠 ML engine: prediction, scoring, insights
-│   └── database.py           # 🗄️ SQLite schema, CRUD, demo data seeding
-│
-├── templates/                # Jinja2 HTML templates
-│   ├── base.html             # Shared dark-theme layout with navigation
-│   ├── index.html            # Landing page with hero & platform stats
-│   ├── upload.html           # Slider form with live prediction preview
-│   ├── dashboard.html        # Personal sleep dashboard
-│   ├── attendance.html       # Attendance tracker & risk meter
-│   ├── predictions.html      # AI forecast, trend projection, factor impact
-│   ├── recommendations.html  # Personalised health recommendation cards
-│   ├── age_insights.html     # Cohort analytics (4 groups × 4 chart types)
-│   ├── research.html         # Research stats & correlation analysis
-│   └── about.html            # Project information
-│
-├── static/
-│   ├── css/main.css          # Dark theme, gradient accents, responsive layout
-│   ├── js/main.js            # Live preview engine, Chart.js charts, API calls
-│   └── images/               # UI assets
-│
-├── data/
-│   └── sleep360.db           # SQLite database (auto-created, gitignored)
-│
-├── screenshots/              # App screenshots (used in this README)
-├── requirements.txt          # Python dependencies
-├── .gitignore                # Python + Flask + ML gitignore
-├── LICENSE                   # MIT License
-├── CONTRIBUTING.md           # Contribution guidelines
-└── README.md                 # This file
+├── __init__.py          # app factory, security headers, error handlers
+├── config.py            # env-driven config classes
+├── models.py            # 11 tables (see docs/ARCHITECTURE.md for the ERD)
+├── schemas.py           # Pydantic request schemas
+├── api/                 # REST v1: auth, sleep, attendance, planner, insights, assistant, account
+├── web/                 # page routes
+├── services/            # business logic
+├── ml/                  # features, synthetic data, training, predictor, artifacts/
+├── templates/ static/   # UI
+└── cli.py               # flask ml train | demo create/cleanup | notifications scan | assess backfill
+migrations/              # Alembic
+tests/                   # pytest (55 tests, 88% coverage)
+scripts/e2e_smoke.py     # Playwright end-to-end journey
 ```
 
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Python **3.9+** — [Download](https://python.org/downloads)
-- pip (bundled with Python)
-- Git
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/YOUR_USERNAME/sleep360.git
-cd sleep360
-```
-
-### 2. Create & Activate Virtual Environment
-```bash
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# macOS / Linux
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Run the Application
-```bash
-python app.py
-```
-
-### 5. Open in Browser
-```
-http://localhost:5000
-```
-
-> 🎉 The database auto-creates on first run with **8 demo student profiles** pre-loaded. Sign in with any demo email (e.g. `rahul@demo.com`) to explore all features immediately.
-
-**Demo Accounts**
-
-| Name | Email | Profile |
-|---|---|---|
-| Rahul Verma | rahul@demo.com | Good sleeper, high attendance |
-| Sneha Reddy | sneha@demo.com | High risk, sleep deprived |
-| Dev Kapoor | dev@demo.com | Optimal sleep, best attendance |
-| Rohan Das | rohan@demo.com | Critical risk, needs help |
-
----
-
-## 🔌 API Reference
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/register` | Register new student |
-| `POST` | `/api/login` | Sign in with email |
-| `POST` | `/api/logout` | Clear session |
-| `POST` | `/api/submit` | Submit sleep data + run ML prediction |
-| `GET` | `/api/user-data` | Get current user's records & predictions |
-| `GET` | `/api/platform-stats` | Aggregate platform statistics |
-| `GET` | `/api/age-group-data` | Cohort-segmented analytics |
-
-**Sample Request — Submit Sleep Data:**
-```json
-POST /api/submit
-{
-  "sleep_duration": 7.0,
-  "deep_sleep_percentage": 18,
-  "sleep_timing": 0,
-  "sleep_quality": 7,
-  "study_hours": 5,
-  "screen_time": 3,
-  "physical_activity": 4,
-  "stress_level": 5
-}
-```
-
-**Sample Response:**
-```json
-{
-  "ok": true,
-  "result": {
-    "predicted_attendance": 87.0,
-    "attendance_risk_level": "low",
-    "attendance_risk_score": 3.0,
-    "sleep_score": 74.4,
-    "fatigue_risk_level": "low",
-    "fatigue_recommendation": "✅ Good sleep hygiene! Keep it up."
-  },
-  "insights": [...]
-}
-```
-
----
-
-## 🔮 Future Scope
-
-- [ ] 🤖 **scikit-learn Upgrade** — Train Random Forest / XGBoost on real sleep study datasets
-- [ ] 🔐 **JWT Authentication** — Token-based login with bcrypt password hashing
-- [ ] 📱 **React Frontend** — Decouple into SPA architecture with Flask REST backend
-- [ ] ☁️ **Cloud Deployment** — Deploy to Render / Railway with PostgreSQL
-- [ ] 📲 **Wearable Integration** — Auto-import from Fitbit / Apple Health APIs
-- [ ] 🔔 **Smart Notifications** — Alert students when attendance risk rises
-- [ ] 📤 **PDF Report Export** — Generate personalised health reports (ReportLab)
-- [ ] 🐳 **Docker Containerisation** — One-command `docker-compose up` deployment
-- [ ] 🏫 **Faculty Admin Panel** — Institution-level analytics and intervention tools
-- [ ] 📈 **Multi-week Trend Tracking** — Historical sleep timeline per student
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+## Quick start
 
 ```bash
-# Standard workflow
-git checkout -b feature/your-feature-name
-# make your changes
-git commit -m "feat: describe your change"
-git push origin feature/your-feature-name
-# open a Pull Request
+git clone https://github.com/khushir11/Sleep360.git && cd Sleep360
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements-dev.txt
+cp .env.example .env                                    # set SECRET_KEY; set SESSION_COOKIE_SECURE=0 for http://localhost
+flask --app wsgi db upgrade                             # create the database
+flask --app wsgi demo create                            # optional: demo@sleep360.dev / Demo12345
+flask --app wsgi run                                    # http://127.0.0.1:5000
 ```
 
----
+Or click **Try the demo** on the landing page. It creates a private sandbox with generated data.
 
-## 👩‍💻 Contributors
+With Docker:
+```bash
+docker build -t sleep360 . && docker run -p 8000:8000 -e SECRET_KEY=$(openssl rand -hex 32) -e SESSION_COOKIE_SECURE=0 sleep360
+```
 
-| Name | Role |
-|---|---|
-| Khushi Rai | Full-Stack Developer  |
-| N. Harshani|   ML Designer         |
+## Environment variables
 
----
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `SECRET_KEY` | **yes** | – | Signs sessions and CSRF tokens. The app refuses to start without it. |
+| `APP_ENV` | no | `development` | `development` or `production` |
+| `DATABASE_URL` | prod | SQLite in `instance/` | Postgres URL (`postgres://` is normalised automatically) |
+| `ANTHROPIC_API_KEY` | no | – | Enables the Claude assistant. Without it, the built-in guide answers. |
+| `ANTHROPIC_MODEL` | no | `claude-haiku-5-5` | Any Claude model id |
+| `ASSISTANT_MAX_TOKENS` | no | `700` | Reply length cap |
+| `SESSION_COOKIE_SECURE` | no | `1` | Set `0` only for plain-HTTP local dev |
+| `RATELIMIT_STORAGE_URI` | no | `memory://` | Use `redis://…` when running multiple instances |
+| `MODEL_PATH` | no | bundled artifact | Alternative model file |
 
-## 📄 License
+**Getting an Anthropic key:** create one at console.anthropic.com → API keys, then set `ANTHROPIC_API_KEY` in `.env` or in the Render dashboard. Keys are only read from the environment and never sent to the browser.
 
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+## Testing
 
----
+```bash
+pytest --cov=sleep360          # 55 tests: auth/security, isolation, attendance maths, sleep scoring,
+                               # CSV pipeline, ML pipeline, planner, recommendations, assistant (mocked LLM),
+                               # notifications, PDF/export, pages
+ruff check . && ruff format --check .
+BASE_URL=http://127.0.0.1:5000 python scripts/e2e_smoke.py   # browser journey (needs `pip install playwright`)
+```
 
-<div align="center">
+Latest results: **55 passed, 88% coverage**, ruff clean. Migrations and the full API were also exercised against **PostgreSQL 16**, which caught a column-length bug that SQLite silently accepts (see the changelog). The Playwright journey passes with no JS errors. Pages were checked at 1366×900 and 390×844.
 
-Made with ❤️ for student health & academic success
+CI (GitHub Actions) runs lint, tests with coverage, and `db upgrade` + `db check` against a Postgres service on every push and PR.
 
-⭐ **If this project helped you, please give it a star!**
+## Deployment
 
-</div>
+**Render (recommended, matches the original deployment).** `render.yaml` is a Blueprint for a web service plus managed Postgres:
+1. Push to GitHub → Render Dashboard → **New → Blueprint** → select the repo.
+2. Render generates `SECRET_KEY` and wires `DATABASE_URL`. Optionally add `ANTHROPIC_API_KEY`.
+3. Each deploy runs `flask db upgrade` before starting gunicorn. Health check: `/api/v1/health`.
+
+Notes: Render's free Postgres expires after a period of time (check Render's current terms), so use a paid instance for anything long-lived. On free web services the in-memory rate limiter resets on restart; use Redis for `RATELIMIT_STORAGE_URI` if that matters.
+
+**Scheduled jobs (optional):** run `flask --app wsgi notifications scan` hourly and `flask --app wsgi demo cleanup` daily (Render Cron Job or any scheduler). Notifications are also generated when a user opens the dashboard.
+
+**Any Docker host:** use the included `Dockerfile` (non-root user, migrations on start, gunicorn with 2 workers × 4 threads).
+
+## Machine learning
+
+Target: next-day fatigue (self-reported daytime sleepiness ≥ 7/10). 10 engineered features (last night, 7-day mean, 7-day sleep debt, bedtime SD, bedtime lateness, quality, stress, screens, caffeine, exercise).
+
+| Model (5-fold GroupKFold by student) | ROC-AUC | Avg precision | Brier |
+|---|---|---|---|
+| **Logistic regression (selected)** | **0.742 ± 0.012** | 0.619 | 0.179 |
+| Random forest | 0.739 ± 0.014 | 0.619 | 0.180 |
+| Histogram gradient boosting | 0.740 ± 0.013 | 0.620 | 0.179 |
+| Baseline: "slept < 6h" rule | 0.570 | 0.398 | 0.222 |
+| Baseline: base rate | 0.500 | 0.323 | 0.219 |
+
+> ⚠️ **Trained on simulated data.** No real student dataset was available. The generator encodes assumed effects whose directions come from sleep research and whose magnitudes are invented, so these metrics measure how well the pipeline recovers a known signal, not anything about real students. Every place the estimate appears in the app says so. The app collects a real label (daytime sleepiness), and `flask ml train --source db` retrains on consented, non-demo data once there's enough (≥200 rows, ≥10 users).
+
+The trees didn't beat logistic regression, so the simpler, more interpretable model was selected (the rule is "simpler wins within 0.005 AUC"). Full write-up: [docs/ML.md](docs/ML.md). Live model card: `/model`.
+
+## Limitations
+
+- **Not a medical device.** Sleep360 gives wellness guidance, not diagnoses.
+- **The fatigue model is trained on simulated data** (see above). The sleep score is a designed heuristic.
+- **No wearable APIs.** Fitbit, Google Fit and Apple Health need OAuth apps and developer accounts. The CSV import accepts their exports today; direct sync would plug into the same `importer` pipeline.
+- **Notifications are in-app plus browser notifications while a tab is open.** True push (Web Push / email) needs VAPID keys or an email provider.
+- **Peer challenges** were deliberately not built: comparing students' wellness data raises privacy issues that need consent design first.
+- **The demo is rate-limited** (5 per hour per IP). Stale demos are removed by `flask demo cleanup`.
+
+## License
+
+MIT, see [LICENSE](LICENSE).

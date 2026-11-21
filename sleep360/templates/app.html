@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% set nav = [
+  ("dashboard", "Dashboard", "grid"),
+  ("sleep", "Sleep", "moon"),
+  ("attendance", "Attendance", "calendar"),
+  ("planner", "Planner", "list"),
+  ("insights", "Insights", "chart"),
+  ("assistant", "Assistant", "chat"),
+] %}
+{% block body_attrs %}data-page="{{ page }}"{% endblock %}
+{% block body %}
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="brand" href="{{ url_for('web.page', name='dashboard') }}">
+      <span class="brand-mark"><svg class="i"><use href="#i-moon"/></svg></span> Sleep360
+    </a>
+    {% for key, label, icon in nav %}
+      <a class="nav-link" href="{{ url_for('web.page', name=key) }}" {% if page == key %}aria-current="page"{% endif %}>
+        <svg class="i"><use href="#i-{{ icon }}"/></svg>{{ label }}
+      </a>
+    {% endfor %}
+    <div class="nav-spacer"></div>
+    <div class="nav-foot">
+      <a class="nav-link" href="{{ url_for('web.page', name='settings') }}" {% if page == 'settings' %}aria-current="page"{% endif %}>
+        <svg class="i"><use href="#i-settings"/></svg>Settings &amp; data
+      </a>
+      <a class="nav-link" href="{{ url_for('web.model') }}"><svg class="i"><use href="#i-beaker"/></svg>How the model works</a>
+      <button class="nav-link btn ghost" type="button" data-action="logout"><svg class="i"><use href="#i-logout"/></svg>Sign out</button>
+      <p class="muted">{{ current_user.name }}</p>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    {% if current_user.is_demo %}
+      <div class="demo-banner" role="note">
+        <svg class="i"><use href="#i-info"/></svg>
+        <span>You're exploring a <strong>demo account</strong> with generated sample data. It's private to you and deleted after 48 hours. <a href="{{ url_for('web.register') }}">Create your own account</a></span>
+      </div>
+    {% endif %}
+    <header class="topbar">
+      <div>
+        <h1>{% block heading %}{{ title }}{% endblock %}</h1>
+        <p class="sub">{% block subheading %}{% endblock %}</p>
+      </div>
+      <div class="top-actions">
+        {% block actions %}{% endblock %}
+        <a class="btn icon mobile-only" href="{{ url_for('web.page', name='settings') }}" aria-label="Settings"><svg class="i"><use href="#i-settings"/></svg></a>
+        <div class="notif-wrap row" id="notifWrap">
+          <button class="btn icon notif-btn" type="button" id="notifBtn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+            <svg class="i"><use href="#i-bell"/></svg><span class="count hidden" id="notifCount"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<nav class="mobile-nav" aria-label="Main navigation">
+  {% for key, label, icon in [("dashboard", "Home", "grid"), ("sleep", "Sleep", "moon"), ("attendance", "Classes", "calendar"),
+                              ("planner", "Plan", "list"), ("insights", "Insights", "chart"), ("assistant", "Ask", "chat")] %}
+    <a href="{{ url_for('web.page', name=key) }}" {% if page == key %}aria-current="page"{% endif %}><svg class="i"><use href="#i-{{ icon }}"/></svg>{{ label }}</a>
+  {% endfor %}
+</nav>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}" defer></script>
+  <script type="module" src="{{ url_for('static', filename='js/pages/' ~ page ~ '.js') }}"></script>
+{% endblock %}

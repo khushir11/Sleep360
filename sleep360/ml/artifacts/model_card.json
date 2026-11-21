@@ -1,0 +1,252 @@
+{
+  "version": "logistic_regression-synthetic-202611212131",
+  "trained_at": "2026-11-21T21:31:55+00:00",
+  "data_source": "synthetic",
+  "data_disclaimer": "Trained on SIMULATED data generated from assumed relationships. Metrics show how well the pipeline recovers a known synthetic signal; they are not evidence about real students.",
+  "target": "Next-day fatigue: self-reported daytime sleepiness >= 7 on a 1-10 scale",
+  "features": [
+    {
+      "name": "sleep_hours",
+      "label": "Last night's sleep"
+    },
+    {
+      "name": "sleep_hours_7d",
+      "label": "7-day average sleep"
+    },
+    {
+      "name": "sleep_debt_7d",
+      "label": "7-day sleep debt"
+    },
+    {
+      "name": "bedtime_sd_7d",
+      "label": "Bedtime irregularity"
+    },
+    {
+      "name": "bedtime_rel_hours",
+      "label": "Bedtime (lateness)"
+    },
+    {
+      "name": "quality",
+      "label": "Sleep quality"
+    },
+    {
+      "name": "stress",
+      "label": "Stress level"
+    },
+    {
+      "name": "screen_minutes",
+      "label": "Screen time before bed"
+    },
+    {
+      "name": "caffeine_late",
+      "label": "Caffeine after 2pm"
+    },
+    {
+      "name": "exercise_minutes",
+      "label": "Exercise"
+    }
+  ],
+  "n_rows": 21200,
+  "n_groups": 400,
+  "positive_rate": 0.3232,
+  "cv": "5-fold GroupKFold by student",
+  "selected_model": "logistic_regression",
+  "selection_rule": "highest mean ROC-AUC; simpler model preferred if within 0.005",
+  "comparison": {
+    "logistic_regression": {
+      "roc_auc": {
+        "mean": 0.7419,
+        "std": 0.0117
+      },
+      "avg_precision": {
+        "mean": 0.6191,
+        "std": 0.0264
+      },
+      "brier": {
+        "mean": 0.1795,
+        "std": 0.0039
+      },
+      "f1": {
+        "mean": 0.4863,
+        "std": 0.0419
+      },
+      "accuracy": {
+        "mean": 0.7385,
+        "std": 0.007
+      }
+    },
+    "random_forest": {
+      "roc_auc": {
+        "mean": 0.7388,
+        "std": 0.0142
+      },
+      "avg_precision": {
+        "mean": 0.6185,
+        "std": 0.0288
+      },
+      "brier": {
+        "mean": 0.1798,
+        "std": 0.0035
+      },
+      "f1": {
+        "mean": 0.4582,
+        "std": 0.0433
+      },
+      "accuracy": {
+        "mean": 0.7411,
+        "std": 0.0058
+      }
+    },
+    "gradient_boosting": {
+      "roc_auc": {
+        "mean": 0.74,
+        "std": 0.0133
+      },
+      "avg_precision": {
+        "mean": 0.62,
+        "std": 0.0297
+      },
+      "brier": {
+        "mean": 0.1792,
+        "std": 0.004
+      },
+      "f1": {
+        "mean": 0.4724,
+        "std": 0.032
+      },
+      "accuracy": {
+        "mean": 0.7412,
+        "std": 0.0075
+      }
+    },
+    "baseline_base_rate": {
+      "roc_auc": {
+        "mean": 0.5,
+        "std": 0.0
+      },
+      "avg_precision": {
+        "mean": 0.3232,
+        "std": 0.0105
+      },
+      "brier": {
+        "mean": 0.2188,
+        "std": 0.0037
+      },
+      "f1": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "accuracy": {
+        "mean": 0.6768,
+        "std": 0.0105
+      }
+    },
+    "baseline_rule_sleep_lt_6h": {
+      "roc_auc": {
+        "mean": 0.5696,
+        "std": 0.0162
+      },
+      "avg_precision": {
+        "mean": 0.3982,
+        "std": 0.0266
+      },
+      "brier": {
+        "mean": 0.2218,
+        "std": 0.004
+      },
+      "f1": {
+        "mean": 0.2625,
+        "std": 0.0532
+      },
+      "accuracy": {
+        "mean": 0.7153,
+        "std": 0.0057
+      }
+    }
+  },
+  "permutation_importance": [
+    {
+      "feature": "sleep_debt_7d",
+      "label": "7-day sleep debt",
+      "importance": 0.1583
+    },
+    {
+      "feature": "stress",
+      "label": "Stress level",
+      "importance": 0.0332
+    },
+    {
+      "feature": "quality",
+      "label": "Sleep quality",
+      "importance": 0.0144
+    },
+    {
+      "feature": "sleep_hours_7d",
+      "label": "7-day average sleep",
+      "importance": 0.0102
+    },
+    {
+      "feature": "sleep_hours",
+      "label": "Last night's sleep",
+      "importance": 0.0098
+    },
+    {
+      "feature": "caffeine_late",
+      "label": "Caffeine after 2pm",
+      "importance": 0.0064
+    },
+    {
+      "feature": "bedtime_sd_7d",
+      "label": "Bedtime irregularity",
+      "importance": 0.003
+    },
+    {
+      "feature": "exercise_minutes",
+      "label": "Exercise",
+      "importance": 0.002
+    },
+    {
+      "feature": "screen_minutes",
+      "label": "Screen time before bed",
+      "importance": 0.0017
+    },
+    {
+      "feature": "bedtime_rel_hours",
+      "label": "Bedtime (lateness)",
+      "importance": 0.0005
+    }
+  ],
+  "reference_values": {
+    "sleep_hours": 7.773,
+    "sleep_hours_7d": 7.8,
+    "sleep_debt_7d": 3.028,
+    "bedtime_sd_7d": 38.53,
+    "bedtime_rel_hours": 5.333,
+    "quality": 7.0,
+    "stress": 5.0,
+    "screen_minutes": 49.0,
+    "caffeine_late": 0.0,
+    "exercise_minutes": 10.0
+  },
+  "generative_coefficients": {
+    "intercept": -2.2,
+    "short_sleep_hinge_per_hour_below_7": 0.85,
+    "sleep_debt_7d_per_hour": 0.12,
+    "bedtime_sd_per_10min": 0.1,
+    "late_bedtime_per_hour_after_midnight": 0.18,
+    "stress_per_point_above_5": 0.22,
+    "stress_x_short_sleep": 0.1,
+    "screen_per_30min": 0.08,
+    "caffeine_late": 0.3,
+    "exercise_per_30min": -0.12,
+    "quality_per_point_above_6": -0.18,
+    "student_random_effect_sd": 0.6
+  },
+  "sklearn_version": "1.9.1",
+  "limitations": [
+    "Not a medical device; does not diagnose sleep disorders or fatigue conditions.",
+    "Self-reported inputs are noisy and subject to recall bias.",
+    "Synthetic training data encodes the authors' assumptions, not measured effects.",
+    "Probabilities are calibrated on the training distribution only."
+  ]
+}

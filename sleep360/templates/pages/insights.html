@@ -1,0 +1,39 @@
+{% extends "app.html" %}
+{% block subheading %}Trends, what's driving them, and what to do next.{% endblock %}
+{% block actions %}
+  <div class="segmented" role="group" aria-label="Period">
+    <button type="button" data-days="14" aria-pressed="false">2W</button><button type="button" data-days="30" aria-pressed="true">30D</button><button type="button" data-days="90" aria-pressed="false">90D</button>
+  </div>
+  <a class="btn" href="/api/v1/reports/weekly.pdf" download><svg class="i"><use href="#i-download"/></svg><span>Weekly PDF</span></a>
+{% endblock %}
+{% block content %}
+<div class="stack">
+  <div class="grid g-4" id="summary"><div class="card"><div class="skeleton h-md"></div></div><div class="card"><div class="skeleton h-md"></div></div><div class="card"><div class="skeleton h-md"></div></div><div class="card"><div class="skeleton h-md"></div></div></div>
+
+  <section class="card"><div class="card-head"><div><h2>Sleep duration &amp; score</h2><p>Daily hours slept and sleep score</p></div></div>
+    <div class="chart-box tall"><canvas id="durChart" role="img" aria-label="Daily sleep duration and score"></canvas></div></section>
+
+  <div class="grid g-2">
+    <section class="card"><div class="card-head"><div><h2>Sleep window</h2><p>When you fell asleep and woke up. Shorter, aligned bars mean a steadier rhythm.</p></div></div>
+      <div class="chart-box"><canvas id="windowChart" role="img" aria-label="Bedtime and wake time per night"></canvas></div></section>
+    <section class="card"><div class="card-head"><div><h2>By weekday</h2><p>Average hours slept, by the day you woke up</p></div></div>
+      <div class="chart-box"><canvas id="weekdayChart" role="img" aria-label="Average sleep by weekday"></canvas></div></section>
+    <section class="card"><div class="card-head"><div><h2>Stress, screens &amp; sleepiness</h2><p>Self-reported, when logged</p></div></div>
+      <div class="chart-box"><canvas id="lifeChart" role="img" aria-label="Stress, screen time and sleepiness trends"></canvas></div></section>
+    <section class="card"><div class="card-head"><div><h2>Attendance trend</h2><p>Share of classes attended each week</p></div></div>
+      <div class="chart-box"><canvas id="attChart" role="img" aria-label="Weekly attendance"></canvas></div></section>
+  </div>
+
+  <section class="card" aria-labelledby="fatH">
+    <div class="card-head"><div><h2 id="fatH">What's driving your fatigue estimate</h2><p id="fatMeta"></p></div><a class="btn sm ghost" href="/model">Model details &amp; limitations</a></div>
+    <div id="fatigue"></div>
+  </section>
+
+  <section class="card" id="recs" aria-labelledby="recH">
+    <div class="card-head"><div><h2 id="recH">Recommendations</h2><p>Generated from your last two weeks. Each one shows the numbers that triggered it.</p></div></div>
+    <div class="grid g-2" id="recList"><div class="skeleton h-lg"></div></div>
+  </section>
+
+  <section class="card"><div class="card-head"><div><h2>Week by week</h2><p>Habit consistency over time</p></div></div><div class="table-wrap" id="weeks"></div></section>
+</div>
+{% endblock %}

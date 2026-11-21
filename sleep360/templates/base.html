@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="description" content="Sleep360 helps college students sleep better, keep attendance on track and plan study around rest.">
+  <meta name="theme-color" content="#5b5bd6">
+  <title>{% block title %}{{ title ~ ' · ' if title }}Sleep360{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preload" href="{{ url_for('static', filename='fonts/inter-var.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body {% block body_attrs %}{% endblock %}>
+  {% include "partials/icons.html" %}
+  {% block body %}{% endblock %}
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
